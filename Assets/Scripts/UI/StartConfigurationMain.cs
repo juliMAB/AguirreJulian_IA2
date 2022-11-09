@@ -24,6 +24,5 @@ public class StartConfigurationMain : MonoBehaviour
         GridSizeZSlider.onValueChanged.AddListener(updateGridSizeZ);
         StartSimButton.onClick.AddListener(onStart);
         StartSimButton.onClick.AddListener(() => { gameObject.transform.parent.gameObject.SetActive(false); });
-
     }
 }

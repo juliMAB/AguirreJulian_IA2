@@ -13,6 +13,8 @@ public class Main : MonoBehaviour
     [SerializeField] private StartConfigurationMain mainConfig = null;
     [SerializeField] private FoodSpawner foodSpawner = null;
     [SerializeField] private GridManager gridManager = null;
+
+    [SerializeField] private PopulationManager[] populations = null;
     [SerializeField] private Vector3 SceneHalfExtents = new Vector3(20.0f, 0.0f, 20.0f); // aca iria la relacion a la grid.
     [SerializeField] private int IterationCount = 1;
 

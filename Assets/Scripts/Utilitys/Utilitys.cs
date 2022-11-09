@@ -21,4 +21,38 @@ public class Utilitys
     {
         return Quaternion.AngleAxis(UnityEngine.Random.value * 360.0f, Vector3.up);
     }
+
+    public static float getBestFitness(List<Genome> population)
+    {
+        float fitness = 0;
+        foreach (Genome g in population)
+        {
+            if (fitness < g.fitness)
+                fitness = g.fitness;
+        }
+
+        return fitness;
+    }
+
+    public static float getAvgFitness(List<Genome> population)
+    {
+        float fitness = 0;
+        foreach (Genome g in population)
+        {
+            fitness += g.fitness;
+        }
+
+        return fitness / population.Count;
+    }
+    public static float getWorstFitness(List<Genome> population)
+    {
+        float fitness = float.MaxValue;
+        foreach (Genome g in population)
+        {
+            if (fitness > g.fitness)
+                fitness = g.fitness;
+        }
+
+        return fitness;
+    }
 }

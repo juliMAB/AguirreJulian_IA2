@@ -51,7 +51,9 @@ public class Main : MonoBehaviour
         for (int i = 0; i < populations.Length; i++)
         {
             totalAgents += populations[i].PopulationCount;
+            populations[i].StartSimulation(i);
         }
+
         foodSpawner.CreateFoods(Vector3.zero, totalAgents);
         isRunning = true;
     }

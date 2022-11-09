@@ -8,19 +8,20 @@ public class PopulationManager : MonoBehaviour
 
     [SerializeField] private GameObject AgentPrifab = null;
     [SerializeField] private StartConfigurationTeam teamConfig = null;
+    [SerializeField] private SimulationScreen SimulationScreen = null;
 
-    public int PopulationCount = 10;
+    [SerializeField] private int populationCount = 10;
 
-    private int EliteCount = 4;
-    private float MutationChance = 0.10f;
-    private float MutationRate = 0.01f;
+    [SerializeField] private int EliteCount = 4;
+    [SerializeField] private float MutationChance = 0.10f;
+    [SerializeField] private float MutationRate = 0.01f;
     
-    private int InputsCount = 4;
-    private int HiddenLayers = 1;
-    private int OutputsCount = 2;
-    private int NeuronsCountPerHL = 7;
-    private float Bias = 1f;
-    private float P = 0.5f;
+    [SerializeField] private int InputsCount = 4;
+    [SerializeField] private int HiddenLayers = 1;
+    [SerializeField] private int OutputsCount = 2;
+    [SerializeField] private int NeuronsCountPerHL = 7;
+    [SerializeField] private float Bias = 1f;
+    [SerializeField] private float P = 0.5f;
 
     private int CurrentGeneration = 0;
 
@@ -28,86 +29,46 @@ public class PopulationManager : MonoBehaviour
 
     List<Agent> populationGOs = new List<Agent>();
     List<Genome> population = new List<Genome>();
-    List<Genome> savePopulation = new List<Genome>();
     List<NeuralNetwork> brains = new List<NeuralNetwork>();
 
+    public int PopulationCount { get => populationCount; }
 
     private void Start()
     {
-        teamConfig.MyStart((x) => { PopulationCount = (int)x; });
+        teamConfig.MyStart(
+            (x) => { populationCount = (int)x; },
+            (x) => { EliteCount = (int)x; },
+            (x) => { MutationChance = x/100.0f; },
+            (x) => { MutationRate = x/100.0f; },
+            (x) => { HiddenLayers = (int)x; },
+            (x) => { NeuronsCountPerHL = (int)x; },
+            (x) => { Bias = -x; },
+            (x) => { P = x; }
+            );
+        SimulationScreen.MyUpdate(0, 0, 0, 0);
     }
 
-
-    
-
-    public float bestFitness 
+    public void StartSimulation(int TeamID)
     {
-        get; private set;
-    }
+        this.TeamID = TeamID;
+        SimulationScreen.transform.parent.gameObject.SetActive(true);
 
-    public float avgFitness 
-    {
-        get; private set;
-    }
-
-    public float worstFitness 
-    {
-        get; private set;
-    }
-
-    private float getBestFitness()
-    {
-        float fitness = 0;
-        foreach(Genome g in population)
-        {
-            if (fitness < g.fitness)
-                fitness = g.fitness;
-        }
-
-        return fitness;
-    }
-
-    private float getAvgFitness()
-    {
-        float fitness = 0;
-        foreach(Genome g in population)
-        {
-            fitness += g.fitness;
-        }
-
-        return fitness / population.Count;
-    }
-
-    private float getWorstFitness()
-    {
-        float fitness = float.MaxValue;
-        foreach(Genome g in population)
-        {
-            if (fitness > g.fitness)
-                fitness = g.fitness;
-        }
-
-        return fitness;
-    }
-
-    public void StartSimulation()
-    {
         // Create and confiugre the Genetic Algorithm
         genAlg = new GeneticAlgorithm(EliteCount, MutationChance, MutationRate);
 
 
-        
-        GenerateInitialPopulation();
+
+        GenerateInitialPopulation(TeamID);
     }
 
     // Generate the random initial population
-    void GenerateInitialPopulation()
+    void GenerateInitialPopulation(int TeamID)
     {
         // Destroy previous tanks (if there are any)
 
         DestroyLists();
 
-        for (int i = 0; i < PopulationCount; i++)
+        for (int i = 0; i < populationCount; i++)
         {
             NeuralNetwork brain = CreateBrain();
             
@@ -125,7 +86,13 @@ public class PopulationManager : MonoBehaviour
     Agent CreateTank(Genome genome, NeuralNetwork brain, int teamID)
     {
         Vector3 position = Utilitys.GetRandomPos(Vector3.zero);
-        GameObject go = Instantiate<GameObject>(AgentPrifab, position, Utilitys. GetRandomRot());
+        GameObject go = Instantiate<GameObject>(AgentPrifab, position, Utilitys. GetRandomRot(),transform);
+        go.name = "Agente_";
+        if (teamID == 0)
+            go.name += "Blue_";
+        else
+            go.name += "Red_";
+        go.name += populationGOs.Count.ToString();
         Agent t = go.GetComponent<Agent>();
         t.SetTeamID(teamID);
         t.SetBrain(genome, brain);
@@ -170,9 +137,13 @@ public class PopulationManager : MonoBehaviour
         CurrentGeneration++;
 
         // Calculate best, average and worst fitness
-        bestFitness = getBestFitness();
-        avgFitness = getAvgFitness();
-        worstFitness = getWorstFitness();
+
+        SimulationScreen.MyUpdate(
+            CurrentGeneration,
+            Utilitys.getBestFitness(population),
+            Utilitys.getAvgFitness(population),
+            Utilitys.getWorstFitness(population)
+            );
 
         // Evolve each genome and create a new array of genomes
         Genome[] newGenomes = genAlg.Epoch(population.ToArray());
@@ -184,7 +155,7 @@ public class PopulationManager : MonoBehaviour
         population.AddRange(newGenomes);
 
         // Set the new genomes as each NeuralNetwork weights
-        for (int i = 0; i < PopulationCount; i++)
+        for (int i = 0; i < populationCount; i++)
         {
             NeuralNetwork brain = brains[i];
 

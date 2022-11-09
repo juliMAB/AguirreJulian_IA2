@@ -12,6 +12,8 @@ public class GridManager : MonoBehaviour {
 
     [SerializeField] private Transform _cam;
 
+    [SerializeField] private Transform _tilesConteiner;
+
     private Dictionary<Vector2, Tile> _tiles;
 
     public void SetSize(int widht, int height)
@@ -27,7 +29,7 @@ public class GridManager : MonoBehaviour {
         {
             for (int y = 0; y < _height; y++) {
                 //var randomTile = _grassTile;
-                var spawnedTile = Instantiate(_grassTile, new Vector3(x, y), Quaternion.identity);
+                var spawnedTile = Instantiate(_grassTile, new Vector3(x, y), Quaternion.identity, _tilesConteiner);
                 spawnedTile.name = $"Tile {x} {y}";
 
               

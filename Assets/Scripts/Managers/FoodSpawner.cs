@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FoodSpawner
+public class FoodSpawner : MonoBehaviour
 {
     public GameObject GameObjectPrefab = null;
 
@@ -15,7 +15,8 @@ public class FoodSpawner
         for (int i = 0; i < foodCuantity; i++)
         {
             Vector3 position = Utilitys.GetRandomPos(SceneHalfExtents);
-            GameObject go = GameObject.Instantiate(GameObjectPrefab, position, Quaternion.identity);
+            GameObject go = GameObject.Instantiate(GameObjectPrefab, position, Quaternion.identity,transform);
+            go.name = "Food_"+foods.Count;
             foods.Add(go);
         }
     }

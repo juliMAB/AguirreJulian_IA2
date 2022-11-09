@@ -17,7 +17,15 @@ public class CameraController : MonoBehaviour
     [SerializeField] private CAMERA_MODE camera_mode = CAMERA_MODE.NORMAL;
     #endregion
 
+    #region PRIVATE_FIELDS
+    Camera cam;
+    #endregion
+
     #region UNITY_CALLS
+    private void Awake()
+    {
+        cam = Camera.main;
+    }
     private void LateUpdate()
     {
         if (camera_mode == CAMERA_MODE.LATE)
@@ -48,8 +56,18 @@ public class CameraController : MonoBehaviour
         float zvalue = Input.GetAxis("Depth");
         float yvalue = Input.GetAxis("Vertical");
 
-        Vector3 newMove = new Vector3(xvalue, yvalue, zvalue);
-        transform.position = newMove*speed*Time.deltaTime + transform.position;
+        
+        if (cam.orthographic)
+        {
+            cam.orthographicSize -= zvalue;
+            Vector3 newMove = new Vector3(xvalue, yvalue, 0);
+            transform.position = newMove * speed * Time.deltaTime* cam.orthographicSize + transform.position;
+        }
+        else
+        {
+            Vector3 newMove = new Vector3(xvalue, yvalue, zvalue);
+            transform.position = newMove*speed*Time.deltaTime + transform.position;
+        }
     }
 
     #endregion

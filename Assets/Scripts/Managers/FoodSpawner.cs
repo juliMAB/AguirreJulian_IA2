@@ -7,14 +7,12 @@ public class FoodSpawner
 
     List<GameObject> foods = new List<GameObject>();
 
-    public int FoodCuantity = 50;
-
-    public void CreateFoods(Vector3 SceneHalfExtents)
+    public void CreateFoods(Vector3 SceneHalfExtents,int foodCuantity)
     {
         // Destroy previous created GameObjects
         DestroyFoods();
 
-        for (int i = 0; i < FoodCuantity; i++)
+        for (int i = 0; i < foodCuantity; i++)
         {
             Vector3 position = Utilitys.GetRandomPos(SceneHalfExtents);
             GameObject go = GameObject.Instantiate(GameObjectPrefab, position, Quaternion.identity);

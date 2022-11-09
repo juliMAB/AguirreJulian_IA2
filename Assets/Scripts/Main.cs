@@ -28,8 +28,10 @@ public class Main : MonoBehaviour
 
     private void Start()
     {
-        if(gridManager==null)
+        if(gridManager == null)
             gridManager = gameObject.AddComponent<GridManager>();
+        if (foodSpawner == null)
+            foodSpawner = new FoodSpawner();
 
         mainConfig.MyStart((x) => { sizeGridX = (int)x; }, (z) => { sizeGridZ = (int)z; }, StartSimulation);
         gridManager.SetSize(sizeGridX, sizeGridZ);
@@ -45,7 +47,12 @@ public class Main : MonoBehaviour
     private void StartSimulation()
     {
         gridManager.GenerateGrid();
-
+        int totalAgents = 0;
+        for (int i = 0; i < populations.Length; i++)
+        {
+            totalAgents += populations[i].PopulationCount;
+        }
+        foodSpawner.CreateFoods(Vector3.zero, totalAgents);
         isRunning = true;
     }
 

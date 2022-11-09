@@ -22,27 +22,6 @@ public class Main : MonoBehaviour
 
     public int TeamsCount { get { return 2; } }
 
-    #region SINGLETON
-    static Main instance = null;
-
-    public static Main Instance
-    {
-        get
-        {
-            if (instance == null)
-                instance = FindObjectOfType<Main>();
-
-            return instance;
-        }
-    }
-
-    void Awake()
-    {
-        instance = this;
-    }
-    #endregion
-
-
     #region UNITY_CALLS
 
     private void Start()

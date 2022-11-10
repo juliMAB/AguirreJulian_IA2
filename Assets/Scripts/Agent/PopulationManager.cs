@@ -89,6 +89,7 @@ public class PopulationManager : MonoBehaviour
         GameObject go = Instantiate<GameObject>(AgentPrifab, Vector3.zero, Quaternion.identity);
         Utilitys.SetAgentName(go, teamID, populationGOs.Count);
         Agent t = go.GetComponent<Agent>();
+        t.UnitName = go.name;
         t.SetTeamID(teamID);
 
         if (teamID==0)

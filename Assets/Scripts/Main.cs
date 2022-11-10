@@ -36,6 +36,8 @@ public class Main : MonoBehaviour
 
         mainConfig.MyStart((x) => { sizeGridX = (int)x; }, (z) => { sizeGridZ = (int)z; }, StartSimulation);
         gridManager.SetSize(sizeGridX, sizeGridZ);
+        SceneHalfExtents = new Vector3(sizeGridX, 0.0f, sizeGridZ); // aca iria la relacion a la grid.
+        
     }
 
     private void FixedUpdate()
@@ -54,8 +56,7 @@ public class Main : MonoBehaviour
             totalAgents += populations[i].PopulationCount;
             populations[i].StartSimulation(i);
         }
-
-        foodSpawner.CreateFoods(Vector3.zero, totalAgents);
+        foodSpawner.CreateFoods(SceneHalfExtents, totalAgents);
         isRunning = true;
     }
 

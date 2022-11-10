@@ -9,6 +9,7 @@ public class ScriptableUnit : ScriptableObject {
 }
 
 public enum Faction {
+    Food = -1,
     Hero = 0,
     Enemy = 1
 }

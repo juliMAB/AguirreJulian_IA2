@@ -8,6 +8,11 @@ public class Utilitys
     {
         return new Vector3(UnityEngine.Random.value * SceneHalfExtents.x * 2.0f - SceneHalfExtents.x, 0.0f, UnityEngine.Random.value * SceneHalfExtents.z * 2.0f - SceneHalfExtents.z);
     }
+    public static Vector2Int GetRandomPosFood()
+    {
+        return new Vector2Int(UnityEngine.Random.Range(0,currentGrid.Width), UnityEngine.Random.Range(1, currentGrid.Width-1));
+    }
+
     public static GameObject GetNearest(Transform questioner, List<GameObject> objects)
     {
         GameObject nearest = objects[0];

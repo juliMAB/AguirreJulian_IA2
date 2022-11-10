@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using System.Linq;
+using UnityEditor;
 
 public class PopulationManager : MonoBehaviour
 {
@@ -33,6 +34,8 @@ public class PopulationManager : MonoBehaviour
     List<NeuralNetwork> brains = new List<NeuralNetwork>();
 
     public int PopulationCount { get => populationCount; }
+
+    public List<Agent> PopulationGOs { get => populationGOs; }
 
     private void Start()
     {
@@ -91,18 +94,20 @@ public class PopulationManager : MonoBehaviour
         Agent t = go.GetComponent<Agent>();
         t.UnitName = go.name;
         t.SetTeamID(teamID);
-
+        Tile gridPos;
         if (teamID==0)
         {
-            Tile gridPos = Utilitys.currentGrid.GetTileAtPosition(new Vector2 (populationGOs.Count(), 0));
-            gridPos.SetUnit(t);
+            Vector2Int resPos = new Vector2Int(Mathf.CeilToInt(populationGOs.Count()), 0);
+            gridPos = Utilitys.currentGrid.GetTileAtPosition(resPos);
         }
         else
         {
-            Tile gridPos = Utilitys.currentGrid.GetTileAtPosition(new Vector2(Utilitys.currentGrid.Width - populationGOs.Count(), Utilitys.currentGrid.Height));
-            gridPos.SetUnit(t);
+            Vector2Int resPos = new Vector2Int(Utilitys.currentGrid.Width - populationGOs.Count(), Utilitys.currentGrid.Height);
+            gridPos = Utilitys.currentGrid.GetTileAtPosition(resPos);
         }
-        
+        t.NewTile = gridPos;
+        t.MoveToNewTile();
+
         t.SetBrain(genome, brain);
         return t;
     }
@@ -175,34 +180,38 @@ public class PopulationManager : MonoBehaviour
         }
     }
 
-    public void LocalFixelUpdate(float dt,Vector3 SceneHalfExtents,List<GameObject> mines,int teamID)
+    public void FindFoodUpdate(float dt,Vector3 SceneExtents,List<Food> foods,int teamID)
 	{
         foreach (Agent t in populationGOs)
         {
             // Get the nearest mine
-            GameObject mine = Utilitys.GetNearest(t.transform, mines);
+            Food food = Utilitys.GetNearest(t.transform, foods);
 
             // Set the nearest mine to current tank
-            t.SetNearestMine(mine);
+            t.SetNearestFood(food);
 
             // Think!! 
 
-            t.Think(dt);
-
-            // Just adjust tank position when reaching world extents
-            Vector3 pos = t.transform.position;
-            if (pos.x > SceneHalfExtents.x)
-                pos.x -= SceneHalfExtents.x * 2;
-            else if (pos.x < -SceneHalfExtents.x)
-                pos.x += SceneHalfExtents.x * 2;
-
-            if (pos.z > SceneHalfExtents.z)
-                pos.z -= SceneHalfExtents.z * 2;
-            else if (pos.z < -SceneHalfExtents.z)
-                pos.z += SceneHalfExtents.z * 2;
-
-            // Set tank position
-            t.transform.position = pos;
+            t.Think(dt); // piensa cual va a ser la posicion siguiente a la que se va a mover.
+        }
+    }
+    public void MoveUpdate(List<Agent> OtherPopulation)
+    {
+        foreach (Agent t in populationGOs)
+        {
+            foreach (Agent t2 in OtherPopulation) // comparar con sus compañeros si seder su nueva tile y no moverse.
+            {
+                if (t.NewTile == t2.NewTile)
+                    if (Random.value > t.ThinkFightOrRun())//huir.
+                        t.NewTile = t.PreviousTile;
+            }
+        }
+    }
+    public void LastUpdate()
+    {
+        foreach (Agent t in populationGOs)
+        {
+            t.AskTileFoodorMove(); // comer la comida o moverse a la newTile.
         }
     }
 }

@@ -24,8 +24,8 @@ public class MenuManager : MonoBehaviour {
         _tileObject.GetComponentInChildren<Text>().text = tile.TileName;
         _tileObject.SetActive(true);
 
-        if (tile.OccupiedUnit) {
-            _tileUnitObject.GetComponentInChildren<Text>().text = tile.OccupiedUnit.UnitName;
+        if (tile.OccupiedUnit != null && tile.OccupiedUnit[0] != null) {
+            _tileUnitObject.GetComponentInChildren<Text>().text = tile.OccupiedUnit[0].UnitName;
             _tileUnitObject.SetActive(true);
         }
     }

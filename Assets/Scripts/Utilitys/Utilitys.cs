@@ -13,9 +13,9 @@ public class Utilitys
         return new Vector2Int(UnityEngine.Random.Range(0,currentGrid.Width), UnityEngine.Random.Range(1, currentGrid.Width-1));
     }
 
-    public static GameObject GetNearest(Transform questioner, List<GameObject> objects)
+    public static Food GetNearest(Transform questioner, List<Food> objects)
     {
-        GameObject nearest = objects[0];
+        var nearest = objects[0];
         foreach (var item in objects)
         {
             if(Vector3.Distance(item.transform.position,questioner.position)<Vector3.Distance(nearest.transform.position,questioner.position))

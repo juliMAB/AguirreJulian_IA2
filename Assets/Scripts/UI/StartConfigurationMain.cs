@@ -6,22 +6,24 @@ public class StartConfigurationMain : MonoBehaviour
 {
 
     public Text GridSizeXTxt;
-    public Text GridSizeZTxt;
+    public Text GridSizeYTxt;
     public Slider GridSizeXSlider;
-    public Slider GridSizeZSlider;
+    public Slider GridSizeYSlider;
     public Button StartSimButton;
 
     string GridSizeX = "SizeX : ";
-    string GridSizeZ = "SizeZ : ";
+    string GridSizeY = "SizeY : ";
 
-    public void MyStart(UnityAction<float>updateGridSizeX, UnityAction<float> updateGridSizeZ, UnityAction onStart)
+    public void MyStart(UnityAction<float>updateGridSizeX, UnityAction<float> updateGridSizeY, UnityAction onStart)
     {
         GridSizeXTxt.text = GridSizeX + GridSizeXSlider.value.ToString();
-        GridSizeZTxt.text = GridSizeZ + GridSizeZSlider.value.ToString();
+        GridSizeYTxt.text = GridSizeY + GridSizeYSlider.value.ToString();
         GridSizeXSlider.onValueChanged.AddListener((v) => {GridSizeXTxt.text = GridSizeX + v.ToString();});
-        GridSizeZSlider.onValueChanged.AddListener((v) => {GridSizeZTxt.text = GridSizeZ + v.ToString();});
+        GridSizeYSlider.onValueChanged.AddListener((v) => {GridSizeYTxt.text = GridSizeY + v.ToString();});
         GridSizeXSlider.onValueChanged.AddListener(updateGridSizeX);
-        GridSizeZSlider.onValueChanged.AddListener(updateGridSizeZ);
+        GridSizeYSlider.onValueChanged.AddListener(updateGridSizeY);
+        updateGridSizeX?.Invoke(GridSizeXSlider.value);
+        updateGridSizeY?.Invoke(GridSizeYSlider.value);
         StartSimButton.onClick.AddListener(onStart);
         StartSimButton.onClick.AddListener(() => { gameObject.transform.parent.gameObject.SetActive(false); });
     }

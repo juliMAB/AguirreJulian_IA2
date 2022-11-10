@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4663402995650639772}
   - component: {fileID: 6950769682446285766}
   - component: {fileID: 4378865177075453550}
+  - component: {fileID: -9008826296827737719}
   m_Layer: 0
   m_Name: BlueCube
   m_TagString: Untagged
@@ -98,9 +99,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UnitName: 
   OccupiedTile: {fileID: 0}
+  LastTile: {fileID: 0}
   Faction: 0
-  teamID: -1
-  fitness: 0
   genome:
     genome: []
     fitness: 0
@@ -108,3 +108,18 @@ MonoBehaviour:
     totalWeightsCount: 0
     inputsCount: 0
   inputs: []
+  food: {fileID: 0}
+  teamID: -1
+  fitness: 0
+--- !u!114 &-9008826296827737719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1433019768625526402}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ad60b9cec21cc940b7b9d07d48792af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

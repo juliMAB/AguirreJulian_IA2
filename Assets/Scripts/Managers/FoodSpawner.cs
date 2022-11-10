@@ -5,7 +5,7 @@ public class FoodSpawner : MonoBehaviour
 {
     public GameObject GameObjectPrefab = null;
 
-    List<BaseUnit> foods = new List<BaseUnit>();
+    public List<Food> foods = new List<Food>();
 
     public void CreateFoods(Vector3 SceneHalfExtents,int foodCuantity)
     {
@@ -17,13 +17,10 @@ public class FoodSpawner : MonoBehaviour
             Vector2Int position = Utilitys.GetRandomPosFood();
             GameObject go = GameObject.Instantiate(GameObjectPrefab, Vector3.zero, Quaternion.identity,transform);
             go.name = "Food_"+foods.Count;
-            BaseUnit FoodUnit = go.AddComponent<BaseUnit>();
+            Food FoodUnit = go.AddComponent<Food>();
             FoodUnit.UnitName = go.name;
             foods.Add(FoodUnit);
-
-            Tile gridPos = Utilitys.currentGrid.GetTileAtPosition(position);
-            gridPos.SetUnit(FoodUnit);
-
+            FoodUnit.RelocateFood();
         }
     }
     void DestroyFoods()

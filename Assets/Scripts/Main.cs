@@ -30,6 +30,7 @@ public class Main : MonoBehaviour
     {
         if(gridManager == null)
             gridManager = gameObject.AddComponent<GridManager>();
+        Utilitys.currentGrid = gridManager;
         if (foodSpawner == null)
             foodSpawner = new FoodSpawner();
 

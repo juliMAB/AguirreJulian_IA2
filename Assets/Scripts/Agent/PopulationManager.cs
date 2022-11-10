@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using System.Linq;
 
 public class PopulationManager : MonoBehaviour
 {
@@ -85,16 +86,22 @@ public class PopulationManager : MonoBehaviour
 
     Agent CreateTank(Genome genome, NeuralNetwork brain, int teamID)
     {
-        Vector3 position = Utilitys.GetRandomPos(Vector3.zero);
-        GameObject go = Instantiate<GameObject>(AgentPrifab, position, Utilitys. GetRandomRot(),transform);
-        go.name = "Agente_";
-        if (teamID == 0)
-            go.name += "Blue_";
-        else
-            go.name += "Red_";
-        go.name += populationGOs.Count.ToString();
+        GameObject go = Instantiate<GameObject>(AgentPrifab, Vector3.zero, Quaternion.identity);
+        Utilitys.SetAgentName(go, teamID, populationGOs.Count);
         Agent t = go.GetComponent<Agent>();
         t.SetTeamID(teamID);
+
+        if (teamID==0)
+        {
+            Tile gridPos = Utilitys.currentGrid.GetTileAtPosition(new Vector2 (populationGOs.Count(), 0));
+            gridPos.SetUnit(t);
+        }
+        else
+        {
+            Tile gridPos = Utilitys.currentGrid.GetTileAtPosition(new Vector2(Utilitys.currentGrid.Width - populationGOs.Count(), Utilitys.currentGrid.Height));
+            gridPos.SetUnit(t);
+        }
+        
         t.SetBrain(genome, brain);
         return t;
     }

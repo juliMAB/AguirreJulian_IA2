@@ -16,6 +16,9 @@ public class GridManager : MonoBehaviour {
 
     private Dictionary<Vector2, Tile> _tiles;
 
+    public int Width { get => _width; }
+    public int Height { get => _height; }
+
     public void SetSize(int widht, int height)
     {
         _width = widht;

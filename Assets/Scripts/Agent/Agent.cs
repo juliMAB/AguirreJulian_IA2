@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Windows;
 
-public class Agent : MonoBehaviour
+public class Agent : BaseUnit
 {
     [SerializeField] private int teamID = -1;
     [SerializeField] float fitness = 0;

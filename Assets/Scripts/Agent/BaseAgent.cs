@@ -5,8 +5,8 @@ using UnityEngine;
 public class BaseAgent : BaseUnit
 {
 
-    [SerializeField] protected Genome genome;
-    [SerializeField] protected NeuralNetwork brain;
+    [SerializeField] public Genome genome;
+    [SerializeField] public NeuralNetwork brain;
     [SerializeField] protected float[] inputs;
 
     [SerializeField] protected Food food;

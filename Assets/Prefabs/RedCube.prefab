@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 7695947229625560284}
   - component: {fileID: 5335880833457184902}
   - component: {fileID: 7724348820943645349}
+  - component: {fileID: 2632130854936126851}
+  - component: {fileID: 1657379398025111852}
   m_Layer: 0
   m_Name: RedCube
   m_TagString: Untagged
@@ -97,3 +99,47 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2632130854936126851
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4150586614500650434}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3c5bf999d5136e4da7c4269dbf6d657, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UnitName: 
+  OccupiedTile: {fileID: 0}
+  NewTile: {fileID: 0}
+  PreviousTile: {fileID: 0}
+  Faction: 0
+  genome:
+    genome: []
+    fitness: 0
+  brain:
+    totalWeightsCount: 0
+    inputsCount: 0
+  inputs: []
+  food: {fileID: 0}
+  newPos: {x: 0, y: 0, z: 0}
+  teamID: -1
+  fitness: 0
+  agresivity: 0
+  FlagDie: 0
+  eatFood: 0
+  generationCount: 0
+--- !u!114 &1657379398025111852
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4150586614500650434}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ad60b9cec21cc940b7b9d07d48792af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

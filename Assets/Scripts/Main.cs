@@ -41,8 +41,8 @@ public class Main : MonoBehaviour
         if (foodSpawner == null)
             foodSpawner = new FoodSpawner();
 
-        mainConfig.MyStart((x) => { sizeGridX = (int)x; }, (z) => { sizeGridZ = (int)z; }, StartSimulation);
-        simConfig.MyStart((x) => { MaxTurns = (int)x; });
+        mainConfig.MyStart((x) => { sizeGridX = (int)x; }, (z) => { sizeGridZ = (int)z; }, StartSimulation, (x) => { MaxTurns = (int)x; });
+        simConfig.MyStart((x) => { MaxTurns = (int)x; }, (x) => { TimePerTurn = (int)x; }, (x) => { IterationCount = (int)x; });
         gridManager.SetSize(sizeGridX, sizeGridZ);
         SceneExtents = new Vector3(sizeGridX, 0.0f, sizeGridZ); // aca iria la relacion a la grid.
         

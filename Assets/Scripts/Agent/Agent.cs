@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,6 +10,9 @@ public class Agent : BaseAgent
     [SerializeField] public int teamID = -1;
     [SerializeField] float fitness = 0;
     [SerializeField] float agresivity = 0;
+    [SerializeField] public bool FlagDie = false;
+    [SerializeField] public int eatFood = 0;
+    [SerializeField] public int generationCount = 0;
 
 
     protected override float OnThinkFight()
@@ -38,11 +42,12 @@ public class Agent : BaseAgent
     {
         fitness = 1;
         genome.fitness = fitness;
+        eatFood = 0;
     }
     protected override void OnTakeFood()
     {
         fitness += 1;
+        eatFood++;
         genome.fitness = fitness;
     }
-
 }

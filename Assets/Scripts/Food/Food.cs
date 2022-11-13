@@ -1,13 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Food : BaseUnit
 {
     int maxIterations = 100;
     int currentIteration = 0;
+    System.Action<Food> onDestroyd;
     private void Start()
     {
+        Faction = Faction.Food;
+    }
+    public void MyStart(System.Action<Food> onDestroyd)
+    {
+        this.onDestroyd = onDestroyd;
         Faction = Faction.Food;
     }
     public void RelocateFood()
@@ -32,4 +36,9 @@ public class Food : BaseUnit
             RelocateFood();
         }
     }
+    private void OnDestroy()
+    {
+        onDestroyd?.Invoke(this);
+    }
+
 }

@@ -8,7 +8,7 @@ using UnityEngine.Windows;
 public class Agent : BaseAgent
 {
     [SerializeField] public int teamID = -1;
-    [SerializeField] float fitness = 0;
+    [SerializeField] public float fitness = 0;
     [SerializeField] float agresivity = 0;
     [SerializeField] public bool FlagDie = false;
     [SerializeField] public int eatFood = 0;

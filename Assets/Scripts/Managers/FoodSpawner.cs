@@ -19,6 +19,7 @@ public class FoodSpawner : MonoBehaviour
             go.name = "Food_"+foods.Count;
             Food FoodUnit = go.AddComponent<Food>();
             FoodUnit.UnitName = go.name;
+            FoodUnit.MyStart((x) => { foods.Remove(x); });
             foods.Add(FoodUnit);
             FoodUnit.RelocateFood();
         }
@@ -26,7 +27,7 @@ public class FoodSpawner : MonoBehaviour
     void DestroyFoods()
     {
         foreach (BaseUnit go in foods)
-            GameObject.Destroy(go);
+            GameObject.Destroy(go.gameObject);
         foods.Clear();
     }
 }

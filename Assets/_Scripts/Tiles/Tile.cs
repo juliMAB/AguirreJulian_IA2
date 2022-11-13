@@ -49,15 +49,18 @@ public abstract class Tile : MonoBehaviour {
     }
     public bool HasFood()
     {
+        bool hasFood = false;
         for (int i = 0; i < OccupiedUnit.Count; i++)
         {
             if (OccupiedUnit[i] != null)
             {
                 if (OccupiedUnit[i].Faction ==Faction.Food)
-                    return true;
+                {
+                    hasFood = true;
+                }
             }
         }
-        return false;
+        return hasFood;
     }
     public bool HasUnit()
     {

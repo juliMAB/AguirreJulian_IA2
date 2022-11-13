@@ -28,10 +28,10 @@ public class Utilitys
         return Quaternion.AngleAxis(UnityEngine.Random.value * 360.0f, Vector3.up);
     }
 
-    public static float getBestFitness(List<Genome> population)
+    public static float getBestFitness(List<Agent> population)
     {
         float fitness = 0;
-        foreach (Genome g in population)
+        foreach (Agent g in population)
         {
             if (fitness < g.fitness)
                 fitness = g.fitness;
@@ -40,20 +40,20 @@ public class Utilitys
         return fitness;
     }
 
-    public static float getAvgFitness(List<Genome> population)
+    public static float getAvgFitness(List<Agent> population)
     {
         float fitness = 0;
-        foreach (Genome g in population)
+        foreach (Agent g in population)
         {
             fitness += g.fitness;
         }
 
         return fitness / population.Count;
     }
-    public static float getWorstFitness(List<Genome> population)
+    public static float getWorstFitness(List<Agent> population)
     {
         float fitness = float.MaxValue;
-        foreach (Genome g in population)
+        foreach (Agent g in population)
         {
             if (fitness > g.fitness)
                 fitness = g.fitness;

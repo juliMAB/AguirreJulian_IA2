@@ -31,8 +31,6 @@ public class PopulationManager : MonoBehaviour
     GeneticAlgorithm genAlg;
 
     List<Agent> populationGOs = new List<Agent>();
-    List<Genome> population = new List<Genome>();
-    List<NeuralNetwork> brains = new List<NeuralNetwork>();
 
     public int PopulationCount { get => populationCount; }
 
@@ -66,7 +64,12 @@ public class PopulationManager : MonoBehaviour
     // Generate the random initial population
     void GenerateInitialPopulation(int TeamID)
     {
-        DestroyLists();
+
+        foreach (Agent go in populationGOs)
+            Destroy(go.gameObject);
+
+        populationGOs.Clear();
+        //populationGenomes.Clear();
 
         for (int i = 0; i < populationCount; i++)
         {
@@ -75,9 +78,8 @@ public class PopulationManager : MonoBehaviour
             Genome genome = new Genome(brain.GetTotalWeightsCount());
 
             brain.SetWeights(genome.genome);
-            brains.Add(brain);
 
-            population.Add(genome);
+            //populationGenomes.Add(genome);
 
             populationGOs.Add(CreateTank(genome, brain,TeamID));
         }
@@ -114,8 +116,7 @@ public class PopulationManager : MonoBehaviour
             Destroy(go.gameObject);
 
         populationGOs.Clear();
-        population.Clear();
-        brains.Clear();
+        //populationGenomes.Clear();
     }
 
     // Creates a new NeuralNetwork
@@ -142,12 +143,11 @@ public class PopulationManager : MonoBehaviour
     public void Epoc()
     {
         CurrentGeneration++;
-
         SimulationScreen.MyUpdate(
             CurrentGeneration,
-            Utilitys.getBestFitness(population),
-            Utilitys.getAvgFitness(population),
-            Utilitys.getWorstFitness(population)
+            Utilitys.getBestFitness(populationGOs),
+            Utilitys.getAvgFitness(populationGOs),
+            Utilitys.getWorstFitness(populationGOs)
             );
 
         List<Agent> populationGOToSave = new List<Agent>();
@@ -170,7 +170,7 @@ public class PopulationManager : MonoBehaviour
             {
                 Agent c = populationGOs[i];
                 populationGOs.Remove(c);
-                Destroy(c);
+                Destroy(c.gameObject);
                 i--;
             }
         }
@@ -179,10 +179,6 @@ public class PopulationManager : MonoBehaviour
             populationGenomeNew.Add(item.genome);
         
         Genome[] newGenomes = genAlg.Epoch(populationGenomeNew.ToArray());
-
-        population.Clear();
-
-        population.AddRange(newGenomes);
 
         List<Agent> newPopulationGO = new List<Agent>();
 
@@ -224,7 +220,7 @@ public class PopulationManager : MonoBehaviour
     {
         foreach (Agent t in populationGOs)
         {
-            foreach (Agent t2 in OtherPopulation) // comparar con sus compañeros si seder su nueva tile y no moverse.
+            foreach (Agent t2 in OtherPopulation) // comparar con sus enemigos si seder su nueva tile y no moverse.
             {
                 if (t.NewTile == t2.NewTile)
                     if (Random.value > t.ThinkFightOrRun())//huir.
@@ -233,13 +229,13 @@ public class PopulationManager : MonoBehaviour
         }
     }
 
-    public void MoveAfterUpdate(List<Agent> OtherPopulation)
+    public void FightUpdate(List<Agent> OtherPopulation)
     {
         List<Agent> agentsToKill1 = new List<Agent>();
         List<Agent> agentsToKill2 = new List<Agent>();
         foreach (Agent t in populationGOs)
         {
-            foreach (Agent t2 in OtherPopulation) // comparar con sus enemigos si seder su nueva tile y no moverse.
+            foreach (Agent t2 in OtherPopulation) // comparar con sus enemigos si secedieron.
             {
                 if (t.NewTile == t2.NewTile)//sino se mata a uno de los 2.
                     if (Random.value > 0.5f)

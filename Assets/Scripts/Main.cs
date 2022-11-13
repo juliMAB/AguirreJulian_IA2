@@ -8,6 +8,7 @@ public class Main : MonoBehaviour
     #region PRIVATE_FIELDS
     private bool isRunning = false;
     private float currentTimePerTurn;
+    private int initialFoodCuantity;
     #endregion
 
     #region EXPOSED_FIELDS
@@ -53,31 +54,34 @@ public class Main : MonoBehaviour
         if (!isRunning)
             return;
         float dt = Time.deltaTime;
+        if (currentTimePerTurn < TimePerTurn)
+        {
+            currentTimePerTurn += dt;
+            return;
+        }
+        currentTimePerTurn = 0;
         simConfig.MyUpdate(currentTurn, MaxTurns);
         for (int w = 0; w < Mathf.Clamp(IterationCount / 100.0f * 50.0f, 1.0f, 50.0f); w++)
         {
-            if (currentTimePerTurn < TimePerTurn)
-            {
-                currentTimePerTurn += dt;
-                continue;
-            }
-            currentTimePerTurn = 0;
             for (int i = 0; i < populations.Length; i++)
-            {
                 populations[i].FindFoodUpdate(dt, SceneExtents, foodSpawner.foods, i);
-                //populations[0].MoveUpdate(populations[1].PopulationGOs); // si tendria otro team lo compararia.
-                //populations[1].MoveUpdate(populations[0].PopulationGOs); // si tendria otro team lo compararia.
+
+            populations[0].MoveUpdate(populations[1].PopulationGOs);
+            populations[1].MoveUpdate(populations[0].PopulationGOs);
+
+            for (int i = 0; i < populations.Length; i++)
                 populations[i].LastUpdate();
-            }
+
             if (currentTurn > MaxTurns)
             {
                 Debug.Log("Epoc");
-                //for (int i = 0; i < populations.Length; i++)
-                //    populations[i].Epoc();
+                for (int i = 0; i < populations.Length; i++)
+                    populations[i].Epoc();
+                foodSpawner.CreateFoods(SceneExtents, initialFoodCuantity);
                 currentTurn = 0;
             }
-            currentTurn++;
         }
+        currentTurn++;
     }
     #endregion
     #region PRIVATE_METHODS
@@ -90,6 +94,7 @@ public class Main : MonoBehaviour
             totalAgents += populations[i].PopulationCount;
             populations[i].StartSimulation(i);
         }
+        initialFoodCuantity = totalAgents;
         foodSpawner.CreateFoods(SceneExtents, totalAgents);
         isRunning = true;
     }

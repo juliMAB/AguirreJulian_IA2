@@ -59,7 +59,7 @@ public class BaseAgent : BaseUnit
         if (NewTile.HasFood())
         {
             OnTakeFood();
-            food.RelocateFood();
+            Destroy(food.gameObject);
         }
         MoveToNewTile();
     }

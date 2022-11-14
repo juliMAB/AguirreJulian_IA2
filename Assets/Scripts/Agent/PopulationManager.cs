@@ -10,6 +10,7 @@ public class PopulationManager : MonoBehaviour
     private int TeamID = -1;
 
     [SerializeField] private GameObject AgentPrifab = null;
+    [SerializeField] private GameObject TeamConteiner = null;
     [SerializeField] private StartConfigurationTeam teamConfig = null;
     [SerializeField] private SimulationScreen SimulationScreen = null;
 
@@ -87,13 +88,19 @@ public class PopulationManager : MonoBehaviour
 
     Agent CreateTank(Genome genome, NeuralNetwork brain, int teamID)
     {
-        GameObject go = Instantiate<GameObject>(AgentPrifab, Vector3.zero, Quaternion.identity);
+        GameObject go = Instantiate<GameObject>(AgentPrifab, Vector3.zero, Quaternion.identity, TeamConteiner.transform);
         Utilitys.SetAgentName(go, teamID, populationGOs.Count);
         Agent t = go.GetComponent<Agent>();
         t.UnitName = go.name;
         t.SetTeamID(teamID);
+        SetTankPos(t);
+        t.SetBrain(genome, brain);
+        return t;
+    }
+    void SetTankPos(Agent t)
+    {
         Tile gridPos;
-        if (teamID==0)
+        if (t.teamID == 0)
         {
             Vector2Int resPos = new Vector2Int(Mathf.CeilToInt(populationGOs.Count()), 0);
             gridPos = Utilitys.currentGrid.GetTileAtPosition(resPos);
@@ -105,9 +112,6 @@ public class PopulationManager : MonoBehaviour
         }
         t.NewTile = gridPos;
         t.MoveToNewTile();
-
-        t.SetBrain(genome, brain);
-        return t;
     }
 
     void DestroyLists()
@@ -142,6 +146,7 @@ public class PopulationManager : MonoBehaviour
     // Evolve!!!
     public void Epoc()
     {
+        //primero se actualiza el UI.
         CurrentGeneration++;
         SimulationScreen.MyUpdate(
             CurrentGeneration,
@@ -149,56 +154,68 @@ public class PopulationManager : MonoBehaviour
             Utilitys.getAvgFitness(populationGOs),
             Utilitys.getWorstFitness(populationGOs)
             );
-
+        //se crean las listas de las posibilidades.
         List<Agent> populationGOToSave = new List<Agent>();
         List<Agent> populationGoToReproduce = new List<Agent>();
-
         List<Genome> populationGenomeNew = new List<Genome>();
 
-
+        //se cargan esas listas.
         for (int i = 0; i < populationGOs.Count; i++)
         {
-            if (populationGOs[i].eatFood > 1)
-                populationGoToReproduce.Add(populationGOs[i]);
-
-            if (populationGOs[i].eatFood > 0 && populationGOs[i].generationCount < 2)
-            {
-                populationGOs[i].generationCount++;
-                populationGOToSave.Add(populationGOs[i]);
-            }
-            else
+            if (populationGOs[i].generationCount>2 || populationGOs[i].eatFood <= 0) // matar los que no comen y los adultos.
             {
                 Agent c = populationGOs[i];
                 populationGOs.Remove(c);
                 Destroy(c.gameObject);
                 i--;
+                continue;
+            }
+            if (populationGOs[i].eatFood > 1) //reproducir a todos los que comieron mas de 2.
+                populationGoToReproduce.Add(populationGOs[i]);
+
+            if (populationGOs[i].eatFood > 0 && populationGOs[i].generationCount <= 2) // salvar a todos los que comieron mas de 1.
+            {
+                populationGOs[i].generationCount++;
+                populationGOToSave.Add(populationGOs[i]);
             }
         }
 
-        foreach (var item in populationGoToReproduce)
-            populationGenomeNew.Add(item.genome);
-        
-        Genome[] newGenomes = genAlg.Epoch(populationGenomeNew.ToArray());
-
-        List<Agent> newPopulationGO = new List<Agent>();
-
-        newPopulationGO.AddRange(populationGOs);
-
         populationGOs.Clear();
 
-        for (int i = 0; i < populationGoToReproduce.Count; i++)
+        //inicio proceso de reproduccion.
+        if (populationGoToReproduce.Count>=2)
         {
-            NeuralNetwork brain = populationGoToReproduce[i].brain;
+            foreach (var item in populationGoToReproduce)
+                populationGenomeNew.Add(item.genome);
+        
+            Genome[] newGenomes = genAlg.Epoch(populationGenomeNew.ToArray());
 
-            brain.SetWeights(newGenomes[i].genome);
+            //List<Agent> newPopulationGO = new List<Agent>();
+            //
+            //newPopulationGO.AddRange(populationGOs);
 
-            Agent t = CreateTank(newGenomes[i], brain, TeamID);
-            t.SetBrain(newGenomes[i], brain);
-            populationGOs.Add(t); // se agregarn los nuevos indivuduos.
+            for (int i = 0; i < populationGoToReproduce.Count; i++)
+            {
+                NeuralNetwork brain = populationGoToReproduce[i].brain;
+
+                brain.SetWeights(newGenomes[i].genome);
+
+                Agent t = CreateTank(newGenomes[i], brain, TeamID);
+                t.SetBrain(newGenomes[i], brain);
+                populationGOs.Add(t); // se agregarn los nuevos indivuduos.
+            }
         }
+        //fin inicio de reproduccion.
 
+        //salvar a los que comieron mas de 1.
         for (int i = 0; i < populationGOToSave.Count; i++)
+        {
+            SetTankPos(populationGOToSave[i]);
             populationGOs.Add(populationGOToSave[i]); // se agregan los viejos individos que vivieron.
+        }
+        foreach (var item in populationGOs)
+            item.OnReset();
+        SimulationScreen.UpdateActualPopulation(populationGOs.Count);
     }
 
     public void FindFoodUpdate(float dt,Vector3 SceneExtents,List<Food> foods,int teamID)
@@ -244,8 +261,8 @@ public class PopulationManager : MonoBehaviour
                         agentsToKill1.Add(t);
             }
         }
-        deleteDiesAgents(agentsToKill1, populationGOs);
-        deleteDiesAgents(agentsToKill2, OtherPopulation);
+       // deleteDiesAgents(agentsToKill1, populationGOs);
+       // deleteDiesAgents(agentsToKill2, OtherPopulation);
     }
     private void deleteDiesAgents(List<Agent> agentsToKill, List<Agent> mainList)
     {

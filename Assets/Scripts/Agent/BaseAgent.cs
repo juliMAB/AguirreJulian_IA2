@@ -82,7 +82,7 @@ public class BaseAgent : BaseUnit
     {
     }
 
-    protected virtual void OnReset()
+    public virtual void OnReset()
     {
 
     }

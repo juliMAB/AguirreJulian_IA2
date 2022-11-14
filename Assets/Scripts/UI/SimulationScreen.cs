@@ -7,6 +7,7 @@ public class SimulationScreen : MonoBehaviour
     [SerializeField] private Text BestGenTxt;
     [SerializeField] private Text AverageGenTxt;
     [SerializeField] private Text WorstGenTxt;
+    [SerializeField] private Text ActualPopulationTxt;
 
     public void MyUpdate(int generation, float BestGen,float AverageGen,float WorstGen)
     {
@@ -14,5 +15,10 @@ public class SimulationScreen : MonoBehaviour
         BestGenTxt.text = "BestGen : " + BestGen.ToString();
         AverageGenTxt.text = "AverageGen : " + AverageGen.ToString();
         WorstGenTxt.text = "WorstGen : " + WorstGen.ToString();
+        
+    }
+    public void UpdateActualPopulation(int ActualPopulation)
+    {
+        ActualPopulationTxt.text = "Actual Population : " + ActualPopulation.ToString();
     }
 }

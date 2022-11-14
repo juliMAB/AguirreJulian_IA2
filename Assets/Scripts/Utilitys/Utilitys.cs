@@ -39,7 +39,6 @@ public class Utilitys
 
         return fitness;
     }
-
     public static float getAvgFitness(List<Agent> population)
     {
         float fitness = 0;
@@ -52,7 +51,7 @@ public class Utilitys
     }
     public static float getWorstFitness(List<Agent> population)
     {
-        float fitness = float.MaxValue;
+        float fitness = 0; // con 0 es mas lindo de ver que float.Max.
         foreach (Agent g in population)
         {
             if (fitness > g.fitness)

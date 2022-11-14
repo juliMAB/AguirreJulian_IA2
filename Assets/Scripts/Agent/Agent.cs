@@ -38,7 +38,7 @@ public class Agent : BaseAgent
 
     public void SetTeamID(int id) => teamID = id;
 
-    protected override void OnReset()
+    public override void OnReset()
     {
         fitness = 1;
         genome.fitness = fitness;

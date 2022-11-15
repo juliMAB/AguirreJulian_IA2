@@ -1,13 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using System.Linq;
-using UnityEditor;
-using static UnityEditor.Progress;
+
 
 public class PopulationManager : MonoBehaviour
 {
-    private int TeamID = -1;
+
+    #region EXPOSED_FIELDS
 
     [SerializeField] private GameObject AgentPrifab = null;
     [SerializeField] private GameObject TeamConteiner = null;
@@ -27,16 +26,26 @@ public class PopulationManager : MonoBehaviour
     [SerializeField] private float Bias = 1f;
     [SerializeField] private float P = 0.5f;
 
+    #endregion
+
+    #region PRIVATE_FIELDS
+
+    private int teamID = -1;
+
     private int CurrentGeneration = 0;
 
-    GeneticAlgorithm genAlg;
+    private GeneticAlgorithm genAlg;
 
-    List<Agent> populationGOs = new List<Agent>();
+    private List<Agent> populationGOs = new List<Agent>();
 
+    #endregion
+
+    #region PUBLIC_FIELDS
     public int PopulationCount { get => populationCount; }
 
-    public List<Agent> PopulationGOs { get => populationGOs; }
+    #endregion
 
+    #region UNITY_CALLS
     private void Start()
     {
         teamConfig.MyStart(
@@ -52,95 +61,17 @@ public class PopulationManager : MonoBehaviour
         SimulationScreen.MyUpdate(0, 0, 0, 0);
     }
 
-    public void StartSimulation(int TeamID)
+    #endregion
+
+    #region PUBLIC_METHODS
+    public void StartSimulation(int teamID)
     {
-        this.TeamID = TeamID;
+        this.teamID = teamID;
         SimulationScreen.transform.parent.gameObject.SetActive(true);
 
         genAlg = new GeneticAlgorithm(EliteCount, MutationChance, MutationRate);
 
-        GenerateInitialPopulation(TeamID);
-    }
-
-    // Generate the random initial population
-    void GenerateInitialPopulation(int TeamID)
-    {
-
-        foreach (Agent go in populationGOs)
-            Destroy(go.gameObject);
-
-        populationGOs.Clear();
-        //populationGenomes.Clear();
-
-        for (int i = 0; i < populationCount; i++)
-        {
-            NeuralNetwork brain = CreateBrain();
-            
-            Genome genome = new Genome(brain.GetTotalWeightsCount());
-
-            brain.SetWeights(genome.genome);
-
-            //populationGenomes.Add(genome);
-
-            populationGOs.Add(CreateTank(genome, brain,TeamID));
-        }
-    }
-
-    Agent CreateTank(Genome genome, NeuralNetwork brain, int teamID)
-    {
-        GameObject go = Instantiate<GameObject>(AgentPrifab, Vector3.zero, Quaternion.identity, TeamConteiner.transform);
-        Utilitys.SetAgentName(go, teamID, populationGOs.Count);
-        Agent t = go.GetComponent<Agent>();
-        t.UnitName = go.name;
-        t.SetTeamID(teamID);
-        SetTankPos(t);
-        t.SetBrain(genome, brain);
-        return t;
-    }
-    void SetTankPos(Agent t)
-    {
-        Tile gridPos;
-        if (t.teamID == 0)
-        {
-            Vector2Int resPos = new Vector2Int(Mathf.CeilToInt(populationGOs.Count()), 0);
-            gridPos = Utilitys.currentGrid.GetTileAtPosition(resPos);
-        }
-        else
-        {
-            Vector2Int resPos = new Vector2Int(Utilitys.currentGrid.Width - populationGOs.Count(), Utilitys.currentGrid.Height);
-            gridPos = Utilitys.currentGrid.GetTileAtPosition(resPos);
-        }
-        t.NewTile = gridPos;
-        t.MoveToNewTile();
-    }
-
-    void DestroyLists()
-    {
-        foreach (Agent go in populationGOs)
-            Destroy(go.gameObject);
-
-        populationGOs.Clear();
-        //populationGenomes.Clear();
-    }
-
-    // Creates a new NeuralNetwork
-    NeuralNetwork CreateBrain()
-    {
-        NeuralNetwork brain = new NeuralNetwork();
-
-        // Add first neuron layer that has as many neurons as inputs
-        brain.AddFirstNeuronLayer(InputsCount, Bias, P);
-
-        for (int i = 0; i < HiddenLayers; i++)
-        {
-            // Add each hidden layer with custom neurons count
-            brain.AddNeuronLayer(NeuronsCountPerHL, Bias, P);
-        }
-
-        // Add the output layer with as many neurons as outputs
-        brain.AddNeuronLayer(OutputsCount, Bias, P);
-
-        return brain;
+        GenerateInitialPopulation();
     }
 
     // Evolve!!!
@@ -200,7 +131,7 @@ public class PopulationManager : MonoBehaviour
 
                 brain.SetWeights(newGenomes[i].genome);
 
-                Agent t = CreateTank(newGenomes[i], brain, TeamID);
+                Agent t = CreateTank(newGenomes[i], brain);
                 t.SetBrain(newGenomes[i], brain);
                 populationGOs.Add(t); // se agregarn los nuevos indivuduos.
             }
@@ -217,8 +148,7 @@ public class PopulationManager : MonoBehaviour
             item.OnReset();
         SimulationScreen.UpdateActualPopulation(populationGOs.Count);
     }
-
-    public void FindFoodUpdate(float dt,Vector3 SceneExtents,List<Food> foods,int teamID)
+    public void FindFoodUpdate(float dt,List<Food> foods)
 	{
         foreach (Agent t in populationGOs)
         {
@@ -233,11 +163,11 @@ public class PopulationManager : MonoBehaviour
             t.Think(dt); // piensa cual va a ser la posicion siguiente a la que se va a mover.
         }
     }
-    public void MoveUpdate(List<Agent> OtherPopulation)
+    public void MoveUpdate(PopulationManager OtherPopulation)
     {
         foreach (Agent t in populationGOs)
         {
-            foreach (Agent t2 in OtherPopulation) // comparar con sus enemigos si seder su nueva tile y no moverse.
+            foreach (Agent t2 in OtherPopulation.populationGOs) // comparar con sus enemigos si seder su nueva tile y no moverse.
             {
                 if (t.NewTile == t2.NewTile)
                     if (Random.value > t.ThinkFightOrRun())//huir.
@@ -245,31 +175,32 @@ public class PopulationManager : MonoBehaviour
             }
         }
     }
-
-    public void FightUpdate(List<Agent> OtherPopulation)
+    public void FightUpdate(PopulationManager OtherPopulation)
     {
-        List<Agent> agentsToKill1 = new List<Agent>();
-        List<Agent> agentsToKill2 = new List<Agent>();
-        foreach (Agent t in populationGOs)
+        for (int i = 0; i < populationGOs.Count; i++)
         {
-            foreach (Agent t2 in OtherPopulation) // comparar con sus enemigos si secedieron.
+            for (int w = 0; w < OtherPopulation.populationGOs.Count; w++)
             {
-                if (t.NewTile == t2.NewTile)//sino se mata a uno de los 2.
+                if(populationGOs[i].NewTile == OtherPopulation.populationGOs[w].NewTile)
+                {
                     if (Random.value > 0.5f)
-                        agentsToKill2.Add(t2);
+                    {
+                        Agent c = populationGOs[i];
+                        populationGOs.Remove(c);
+                        Destroy(c.gameObject);
+                        i--;
+                        w = 0;
+                    }
                     else
-                        agentsToKill1.Add(t);
+                    {
+                        Agent c = OtherPopulation.populationGOs[w];
+                        OtherPopulation.populationGOs.Remove(c);
+                        Destroy(c.gameObject);
+                        w--;
+                    }
+                }
+
             }
-        }
-       // deleteDiesAgents(agentsToKill1, populationGOs);
-       // deleteDiesAgents(agentsToKill2, OtherPopulation);
-    }
-    private void deleteDiesAgents(List<Agent> agentsToKill, List<Agent> mainList)
-    {
-        foreach (Agent item in agentsToKill)
-        {
-            mainList.Remove(item);
-            Destroy(item);
         }
     }
     public void LastUpdate()
@@ -279,4 +210,73 @@ public class PopulationManager : MonoBehaviour
             t.AskTileFoodorMove(); // comer la comida o moverse a la newTile.
         }
     }
+    
+    #endregion
+
+    #region PRIVATE_METHODS
+    private void GenerateInitialPopulation()
+    {
+
+        foreach (Agent go in populationGOs)
+            Destroy(go.gameObject);
+
+        populationGOs.Clear();
+
+        for (int i = 0; i < populationCount; i++)
+        {
+            NeuralNetwork brain = CreateBrain();
+            
+            Genome genome = new Genome(brain.GetTotalWeightsCount());
+
+            brain.SetWeights(genome.genome);
+
+            populationGOs.Add(CreateTank(genome, brain));
+        }
+    }
+    private Agent CreateTank(Genome genome, NeuralNetwork brain)
+    {
+        GameObject go = Instantiate<GameObject>(AgentPrifab, Vector3.zero, Quaternion.identity, TeamConteiner.transform);
+        Utilitys.SetAgentName(go, teamID, populationGOs.Count);
+        Agent t = go.GetComponent<Agent>();
+        t.UnitName = go.name;
+        t.SetTeamID(teamID);
+        SetTankPos(t);
+        t.SetBrain(genome, brain);
+        return t;
+    }
+    private void SetTankPos(Agent t)
+    {
+        Tile gridPos;
+        if (t.teamID == 0)
+        {
+            Vector2Int resPos = new Vector2Int(Mathf.CeilToInt(populationGOs.Count()), 0);
+            gridPos = Utilitys.currentGrid.GetTileAtPosition(resPos);
+        }
+        else
+        {
+            Vector2Int resPos = new Vector2Int(Utilitys.currentGrid.Width - populationGOs.Count(), Utilitys.currentGrid.Height);
+            gridPos = Utilitys.currentGrid.GetTileAtPosition(resPos);
+        }
+        t.NewTile = gridPos;
+        t.MoveToNewTile();
+    }
+    private NeuralNetwork CreateBrain()
+    {
+        NeuralNetwork brain = new NeuralNetwork();
+
+        // Add first neuron layer that has as many neurons as inputs
+        brain.AddFirstNeuronLayer(InputsCount, Bias, P);
+
+        for (int i = 0; i < HiddenLayers; i++)
+        {
+            // Add each hidden layer with custom neurons count
+            brain.AddNeuronLayer(NeuronsCountPerHL, Bias, P);
+        }
+
+        // Add the output layer with as many neurons as outputs
+        brain.AddNeuronLayer(OutputsCount, Bias, P);
+
+        return brain;
+    }
+    #endregion
 }

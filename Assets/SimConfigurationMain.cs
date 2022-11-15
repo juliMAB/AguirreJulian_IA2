@@ -4,21 +4,19 @@ using UnityEngine.UI;
 
 public class SimConfigurationMain : MonoBehaviour
 {
-    public Text MaxTurnsText;
-    public Text CurrentTurnMaxTurnsText;
-    public Slider MaxTurnsSlider;
+    [SerializeField] private Text MaxTurnsText;
+    [SerializeField] private Text CurrentTurnMaxTurnsText;
+    [SerializeField] private Slider MaxTurnsSlider;
 
-    public Text TimePerTurnText;
-    public Slider TimePerTurnSlider;
+    [SerializeField] private Text TimePerTurnText;
+    [SerializeField] private Slider TimePerTurnSlider;
 
-    public Text IterationsPerTurnText;
-    public Slider IterationsPerTurnSlider;
+    [SerializeField] private Text IterationsPerTurnText;
+    [SerializeField] private Slider IterationsPerTurnSlider;
 
-    string MaxTurns = "MaxTurns : ";
-
-    string TimeTurn = "TimePerTurn : ";
-
-    string IterationsPerTurn = "IterationsPerTurn : ";
+    private string MaxTurns = "MaxTurns : ";
+    private string TimeTurn = "TimePerTurn : ";
+    private string IterationsPerTurn = "IterationsPerTurn : ";
 
     public void MyStart(UnityAction<float> updateMaxTurns, UnityAction<float> updateTimeTurn, UnityAction<float> updateIterationsPerTurn)
     {

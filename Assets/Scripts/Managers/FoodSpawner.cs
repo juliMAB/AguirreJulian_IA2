@@ -3,13 +3,13 @@ using UnityEngine;
 
 public class FoodSpawner : MonoBehaviour
 {
-    public GameObject GameObjectPrefab = null;
+
+    [SerializeField] private GameObject GameObjectPrefab = null;
 
     public List<Food> foods = new List<Food>();
 
     public void CreateFoods(Vector3 SceneHalfExtents,int foodCuantity)
     {
-        // Destroy previous created GameObjects
         DestroyFoods();
 
         for (int i = 0; i < foodCuantity; i++)
@@ -24,7 +24,7 @@ public class FoodSpawner : MonoBehaviour
             FoodUnit.RelocateFood();
         }
     }
-    void DestroyFoods()
+    private void DestroyFoods()
     {
         foreach (BaseUnit go in foods)
             GameObject.Destroy(go.gameObject);

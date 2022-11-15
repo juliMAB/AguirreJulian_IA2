@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -29,8 +28,6 @@ public class Main : MonoBehaviour
     [SerializeField] private int MaxTurns = 100;
 
     #endregion
-
-    public int TeamsCount { get { return 2; } }
 
     #region UNITY_CALLS
 
@@ -64,10 +61,11 @@ public class Main : MonoBehaviour
         for (int w = 0; w < Mathf.Clamp(IterationCount / 100.0f * 50.0f, 1.0f, 50.0f); w++)
         {
             for (int i = 0; i < populations.Length; i++)
-                populations[i].FindFoodUpdate(dt, SceneExtents, foodSpawner.foods, i);
+                populations[i].FindFoodUpdate(dt, foodSpawner.foods);
 
-            populations[0].MoveUpdate(populations[1].PopulationGOs);
-            populations[1].MoveUpdate(populations[0].PopulationGOs);
+            populations[0].MoveUpdate(populations[1]); // preguntar si el siguiente es el siguiente de otro-> ceder posicion o quedarse.
+            populations[1].MoveUpdate(populations[0]);
+            populations[0].FightUpdate(populations[1]);
 
             for (int i = 0; i < populations.Length; i++)
                 populations[i].LastUpdate();
@@ -84,6 +82,7 @@ public class Main : MonoBehaviour
         currentTurn++;
     }
     #endregion
+
     #region PRIVATE_METHODS
     private void StartSimulation()
     {
@@ -95,11 +94,12 @@ public class Main : MonoBehaviour
             populations[i].StartSimulation(i);
         }
         initialFoodCuantity = totalAgents;
-        foodSpawner.CreateFoods(SceneExtents, totalAgents);
+        foodSpawner.CreateFoods(SceneExtents, initialFoodCuantity);
         isRunning = true;
     }
 
     #endregion
+
     #region PUBLIC_METHODS
 
 

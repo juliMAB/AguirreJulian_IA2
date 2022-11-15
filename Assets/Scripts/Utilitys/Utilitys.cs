@@ -12,7 +12,6 @@ public class Utilitys
     {
         return new Vector2Int(UnityEngine.Random.Range(0,currentGrid.Width), UnityEngine.Random.Range(1, currentGrid.Width-1));
     }
-
     public static Food GetNearest(Transform questioner, List<Food> objects)
     {
         var nearest = objects[0];
@@ -23,11 +22,6 @@ public class Utilitys
         }
         return nearest;
     }
-    public static Quaternion GetRandomRot()
-    {
-        return Quaternion.AngleAxis(UnityEngine.Random.value * 360.0f, Vector3.up);
-    }
-
     public static float getBestFitness(List<Agent> population)
     {
         float fitness = 0;
@@ -60,7 +54,6 @@ public class Utilitys
 
         return fitness;
     }
-
     public static void SetAgentName(GameObject agent, int teamID,int indivCount)
     {
         agent.name = "Agente_";

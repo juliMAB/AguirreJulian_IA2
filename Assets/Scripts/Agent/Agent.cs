@@ -1,9 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.Windows;
 
 public class Agent : BaseAgent
 {
@@ -31,7 +26,7 @@ public class Agent : BaseAgent
         inputs[3] = dir.y;
 
         float[] output = brain.Synapsis(inputs);
-        //agresivity = Mathf.Clamp(output[3], 0.0f, 1.0f);
+        agresivity = Mathf.Clamp(output[3], 0.0f, 1.0f);
         agresivity = 0;
         SetForces(output[0], output[1], dt);
     }

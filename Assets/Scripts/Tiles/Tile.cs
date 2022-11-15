@@ -1,24 +1,24 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public abstract class Tile : MonoBehaviour {
+
+    #region PUBLIC_FIELDS
     public string TileName;
+
+    public List <BaseUnit> OccupiedUnit = null; // cosas en la tile.
+    #endregion
+
+    #region EXPOSED_FIELD
     [SerializeField] protected SpriteRenderer _renderer;
     [SerializeField] private GameObject _highlight;
     [SerializeField] private bool _isWalkable;
+    #endregion
 
-    public List <BaseUnit> OccupiedUnit = new List<BaseUnit>(); // el caso maximo de posibilidades de cosas en la tile.
-
-
-    public virtual void Init(int x, int y)
-    {
-        
-    }
-
+    #region UNITY_CALLS
+    // no se si hacer esto en cada tile es lo mas optimo, pero como no es lo que se evalua, lo dejaremos asi.
     void OnMouseEnter()
-    {
+    { 
         _highlight.SetActive(true);
         MenuManager.Instance.ShowTileInfo(this);
     }
@@ -28,17 +28,10 @@ public abstract class Tile : MonoBehaviour {
         _highlight.SetActive(false);
         MenuManager.Instance.ShowTileInfo(null);
     }
+    #endregion
 
-    public void SetUnit(BaseUnit unit) {
-        if (unit.OccupiedTile)
-        if (unit.OccupiedTile.OccupiedUnit!=null)
-        if (unit.OccupiedTile.OccupiedUnit.Count>0)
-        if (unit.OccupiedTile.OccupiedUnit.Any((x)=>x==unit))
-            unit.OccupiedTile.OccupiedUnit.Remove(unit);
-        unit.transform.position = transform.position;
-        AddUnitOnList(unit);
-        unit.OccupiedTile = this;
-    }
+    #region PUBLIC_METHODS
+    public virtual void Init(int x, int y){ OccupiedUnit.Clear(); }
     public void AddUnitOnList(BaseUnit unit)
     {
         OccupiedUnit.Add(unit);
@@ -74,4 +67,5 @@ public abstract class Tile : MonoBehaviour {
         }
         return false;
     }
+    #endregion
 }

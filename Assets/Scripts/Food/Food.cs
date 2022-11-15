@@ -2,13 +2,24 @@ using UnityEngine;
 
 public class Food : BaseUnit
 {
-    int maxIterations = 100;
-    int currentIteration = 0;
-    System.Action<Food> onDestroyd;
+    #region PRIVATE_FIELD
+    private int maxIterations = 100;
+    private int currentIteration = 0;
+    private System.Action<Food> onDestroyd;
+    #endregion
+
+    #region UNITY_CALLS
     private void Start()
     {
         Faction = Faction.Food;
     }
+    private void OnDestroy()
+    {
+        onDestroyd?.Invoke(this);
+    }
+    #endregion
+
+    #region PUBLIC_METHODS
     public void MyStart(System.Action<Food> onDestroyd)
     {
         this.onDestroyd = onDestroyd;
@@ -36,9 +47,6 @@ public class Food : BaseUnit
             RelocateFood();
         }
     }
-    private void OnDestroy()
-    {
-        onDestroyd?.Invoke(this);
-    }
+    #endregion
 
 }

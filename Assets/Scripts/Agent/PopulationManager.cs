@@ -195,7 +195,7 @@ public class PopulationManager : MonoBehaviour
                         populationGOs.Remove(c);
                         Destroy(c.gameObject);
                         i--;
-                        w = 0;
+                        break;
                     }
                     else
                     {
@@ -278,8 +278,9 @@ public class PopulationManager : MonoBehaviour
                 totalpopulation -= Utilitys.currentGrid.Width;
             }
 
-            Vector2Int resPos = new Vector2Int(Mathf.CeilToInt(populationGOs.Count()), y);
+            Vector2Int resPos = new Vector2Int(Mathf.CeilToInt(totalpopulation), y);
             gridPos = Utilitys.currentGrid.GetTileAtPosition(resPos);
+            t.transform.up = Vector3.up;
         }
         else
         {
@@ -289,8 +290,9 @@ public class PopulationManager : MonoBehaviour
                 y--;
                 totalpopulation -= Utilitys.currentGrid.Width;
             }
-            Vector2Int resPos = new Vector2Int(Utilitys.currentGrid.Width - populationGOs.Count(), y);
+            Vector2Int resPos = new Vector2Int(Utilitys.currentGrid.Width - totalpopulation, y);
             gridPos = Utilitys.currentGrid.GetTileAtPosition(resPos);
+            t.transform.up = -Vector3.up;
         }
         t.NewTile = gridPos;
         t.OccupiedTile = t.NewTile;

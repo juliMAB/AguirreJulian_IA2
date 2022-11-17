@@ -80,11 +80,12 @@ public class BaseAgent : BaseUnit
     }
     public void AskTileFoodorMove()
     {
-        if (NewTile.HasFood())
-        {
-            OnTakeFood();
-            Destroy(food.gameObject);
-        }
+        if(food != null)
+            if (NewTile.HasFood())
+            {
+                OnTakeFood();
+                Destroy(food.gameObject);
+            }
         MoveToNewTile();
     }
 

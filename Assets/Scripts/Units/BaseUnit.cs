@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BaseUnit : MonoBehaviour {
@@ -15,7 +13,8 @@ public class BaseUnit : MonoBehaviour {
         PreviousTile = OccupiedTile;
         OccupiedTile = NewTile;
         NewTile = null;
-        transform.position = OccupiedTile.transform.position;
+        if(OccupiedTile!=null)
+            transform.position = OccupiedTile.transform.position;
         OccupiedTile?.AddUnitOnList(this);
     }
 }

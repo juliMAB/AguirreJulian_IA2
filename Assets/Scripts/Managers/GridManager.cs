@@ -15,6 +15,13 @@ public class GridManager : MonoBehaviour {
     public int Width { get => _width; }
     public int Height { get => _height; }
 
+    public void ClearLists()
+    {
+        foreach (var item in _tiles)
+        {
+            item.Value.ClearTile();
+        }
+    }
     public void SetSize(int widht, int height)
     {
         _width = widht;

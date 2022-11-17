@@ -67,5 +67,10 @@ public abstract class Tile : MonoBehaviour {
         }
         return false;
     }
+
+    public void ClearTile()
+    {
+        OccupiedUnit.Clear();
+    }
     #endregion
 }

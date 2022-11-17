@@ -6,11 +6,16 @@ public class Main : MonoBehaviour
 
     #region PRIVATE_FIELDS
     private bool isRunning = false;
-    private float currentTimePerTurn;
+    private float currentTimePerIteration;
     private int initialFoodCuantity;
+    private FileDataHandler dataHandler;
     #endregion
 
     #region EXPOSED_FIELDS
+    [Header("File Storage Config")]
+    [SerializeField] private string fileName;
+    [SerializeField] private string extention;
+
     [SerializeField] private StartConfigurationMain mainConfig = null;
     [SerializeField] private SimConfigurationMain simConfig = null;
     [SerializeField] private FoodSpawner foodSpawner = null;
@@ -33,6 +38,7 @@ public class Main : MonoBehaviour
 
     private void Start()
     {
+        dataHandler = new FileDataHandler(Application.dataPath, fileName, extention);
         if (gridManager == null)
             gridManager = gameObject.AddComponent<GridManager>();
         Utilitys.currentGrid = gridManager;
@@ -51,17 +57,20 @@ public class Main : MonoBehaviour
         if (!isRunning)
             return;
         float dt = Time.deltaTime;
-        if (currentTimePerTurn < TimePerTurn)
+        
+        if (currentTimePerIteration < TimePerTurn)
         {
-            currentTimePerTurn += dt;
+            currentTimePerIteration += dt;
             return;
         }
-        currentTimePerTurn = 0;
+        currentTimePerIteration = 0;
         simConfig.MyUpdate(currentTurn, MaxTurns);
-        for (int w = 0; w < Mathf.Clamp(IterationCount / 100.0f * 50.0f, 1.0f, 50.0f); w++)
+        for (int w = 0; w < IterationCount; w++)
         {
+
             for (int i = 0; i < populations.Length; i++)
-                populations[i].FindFoodUpdate(dt, foodSpawner.foods);
+                if (foodSpawner.foods.Count > 0)
+                    populations[i].FindFoodUpdate(dt, foodSpawner.foods);
 
             populations[0].MoveUpdate(populations[1]); // preguntar si el siguiente es el siguiente de otro-> ceder posicion o quedarse.
             populations[1].MoveUpdate(populations[0]);
@@ -73,13 +82,14 @@ public class Main : MonoBehaviour
             if (currentTurn > MaxTurns)
             {
                 Debug.Log("Epoc");
+                gridManager.ClearLists();
                 for (int i = 0; i < populations.Length; i++)
                     populations[i].Epoc();
                 foodSpawner.CreateFoods(SceneExtents, initialFoodCuantity);
                 currentTurn = 0;
             }
+            currentTurn++;
         }
-        currentTurn++;
     }
     #endregion
 
@@ -91,7 +101,7 @@ public class Main : MonoBehaviour
         for (int i = 0; i < populations.Length; i++)
         {
             totalAgents += populations[i].PopulationCount;
-            populations[i].StartSimulation(i);
+            populations[i].StartSimulation(i,dataHandler);
         }
         initialFoodCuantity = totalAgents;
         foodSpawner.CreateFoods(SceneExtents, initialFoodCuantity);

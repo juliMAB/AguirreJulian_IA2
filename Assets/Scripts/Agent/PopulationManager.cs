@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
-
+using static UnityEngine.ParticleSystem;
 
 public class PopulationManager : MonoBehaviour
 {
@@ -38,6 +38,12 @@ public class PopulationManager : MonoBehaviour
 
     private List<Agent> populationGOs = new List<Agent>();
 
+    private List<Genome> LoadGen = null;
+
+    private FileDataHandler fileDataHandler = null;
+
+    private bool load = false;
+
     #endregion
 
     #region PUBLIC_FIELDS
@@ -56,16 +62,19 @@ public class PopulationManager : MonoBehaviour
             (x) => { HiddenLayers = (int)x; },
             (x) => { NeuronsCountPerHL = (int)x; },
             (x) => { Bias = -x; },
-            (x) => { P = x; }
+            (x) => { P = x; },
+            ( ) => { LoadData(); }
             );
         SimulationScreen.MyUpdate(0, 0, 0, 0);
+        SimulationScreen.MyStart(SaveData);
     }
 
     #endregion
 
     #region PUBLIC_METHODS
-    public void StartSimulation(int teamID)
+    public void StartSimulation(int teamID , FileDataHandler fileDataHandler)
     {
+        this.fileDataHandler = fileDataHandler;
         this.teamID = teamID;
         SimulationScreen.transform.parent.gameObject.SetActive(true);
 
@@ -97,6 +106,7 @@ public class PopulationManager : MonoBehaviour
             {
                 Agent c = populationGOs[i];
                 populationGOs.Remove(c);
+
                 Destroy(c.gameObject);
                 i--;
                 continue;
@@ -120,10 +130,6 @@ public class PopulationManager : MonoBehaviour
                 populationGenomeNew.Add(item.genome);
         
             Genome[] newGenomes = genAlg.Epoch(populationGenomeNew.ToArray());
-
-            //List<Agent> newPopulationGO = new List<Agent>();
-            //
-            //newPopulationGO.AddRange(populationGOs);
 
             for (int i = 0; i < populationGoToReproduce.Count; i++)
             {
@@ -221,6 +227,20 @@ public class PopulationManager : MonoBehaviour
             Destroy(go.gameObject);
 
         populationGOs.Clear();
+        if (load)
+        {
+            for (int i = 0; i < PopulationCount; i++)
+            {
+
+                NeuralNetwork brain = CreateBrain();
+
+                Genome genome = LoadGen[i];
+
+                brain.SetWeights(genome.genome);
+
+                populationGOs.Add(CreateTank(genome, brain));
+            }
+        }
 
         for (int i = 0; i < populationCount; i++)
         {
@@ -247,17 +267,33 @@ public class PopulationManager : MonoBehaviour
     private void SetTankPos(Agent t)
     {
         Tile gridPos;
+        int totalpopulation = populationGOs.Count();
+        int y = 0;
         if (t.teamID == 0)
         {
-            Vector2Int resPos = new Vector2Int(Mathf.CeilToInt(populationGOs.Count()), 0);
+            y = 0;
+            while (totalpopulation > Utilitys.currentGrid.Width)
+            {
+                y++;
+                totalpopulation -= Utilitys.currentGrid.Width;
+            }
+
+            Vector2Int resPos = new Vector2Int(Mathf.CeilToInt(populationGOs.Count()), y);
             gridPos = Utilitys.currentGrid.GetTileAtPosition(resPos);
         }
         else
         {
-            Vector2Int resPos = new Vector2Int(Utilitys.currentGrid.Width - populationGOs.Count(), Utilitys.currentGrid.Height);
+            y = Utilitys.currentGrid.Height;
+            while (totalpopulation > Utilitys.currentGrid.Width)
+            {
+                y--;
+                totalpopulation -= Utilitys.currentGrid.Width;
+            }
+            Vector2Int resPos = new Vector2Int(Utilitys.currentGrid.Width - populationGOs.Count(), y);
             gridPos = Utilitys.currentGrid.GetTileAtPosition(resPos);
         }
         t.NewTile = gridPos;
+        t.OccupiedTile = t.NewTile;
         t.MoveToNewTile();
     }
     private NeuralNetwork CreateBrain()
@@ -277,6 +313,47 @@ public class PopulationManager : MonoBehaviour
         brain.AddNeuronLayer(OutputsCount, Bias, P);
 
         return brain;
+    }
+
+    private void LoadData()
+    {
+        string TeamData = "TeamData" + teamID.ToString();
+        GameData data = new GameData();
+        data = fileDataHandler.Load(teamID.ToString());
+        CurrentGeneration = data.generationNumber;
+        populationCount = data.PopulationCount;
+        EliteCount = data.EliteCount;
+        MutationChance = data.MutationChance;
+        MutationRate = data.MutationRate;
+        InputsCount = data.InputsCount;
+        HiddenLayers = data.HiddenLayers;
+        OutputsCount = data.OutputsCount;
+        NeuronsCountPerHL = data.NeuronsCountPerHL;
+        Bias = data.Bias;
+        P = data.P;
+
+        LoadGen = data.genomes;
+        load = true;
+    }
+
+    private void SaveData()
+    {
+        GameData data = new GameData();
+        data.generationNumber = CurrentGeneration;
+        data.PopulationCount = PopulationCount;
+        data.EliteCount = EliteCount;
+        data.MutationChance = MutationChance;
+        data.MutationRate = MutationRate;
+        data.InputsCount = InputsCount;
+        data.HiddenLayers = HiddenLayers;
+        data.OutputsCount = OutputsCount;
+        data.NeuronsCountPerHL = NeuronsCountPerHL;
+        data.Bias = Bias;
+        data.P = P;
+        foreach (var item in populationGOs)
+            data.genomes.Add(item.genome);
+
+        fileDataHandler.Save(data, teamID.ToString());
     }
     #endregion
 }

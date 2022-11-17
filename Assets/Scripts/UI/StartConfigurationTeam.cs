@@ -36,6 +36,7 @@ public class StartConfigurationTeam : MonoBehaviour
     public Slider SigmoidSlopeSlider;
     string SigmoidSlopeString = "SigmoidSlope : ";
 
+    public Button LoadButton;
 
     public void MyStart(
         UnityAction<float> updatePopulationCount,
@@ -45,8 +46,8 @@ public class StartConfigurationTeam : MonoBehaviour
         UnityAction<float> updateHiddenLayersCount,
         UnityAction<float> updateNeuronsPerHiddenLayer,
         UnityAction<float> updateBias,
-        UnityAction<float> updateSigmoidSlope
-
+        UnityAction<float> updateSigmoidSlope,
+        UnityAction        updateLoad
         )
     {
         PopulationCountTxt.text = PopulationCountString + PopulationCountSlider.value.ToString();
@@ -88,5 +89,7 @@ public class StartConfigurationTeam : MonoBehaviour
         SigmoidSlopeSlider.onValueChanged.AddListener((v) => { SigmoidSlopeTxt.text = SigmoidSlopeString + v.ToString(); });
         SigmoidSlopeSlider.onValueChanged.AddListener(updateSigmoidSlope);
         updateSigmoidSlope?.Invoke(SigmoidSlopeSlider.value);
+
+        LoadButton.onClick.AddListener(updateLoad);
     }
 }

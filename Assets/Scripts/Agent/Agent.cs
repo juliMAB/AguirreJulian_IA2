@@ -18,7 +18,7 @@ public class Agent : BaseAgent
     protected override void OnThink(float dt)
     {
         Vector3 dirToMine = GetDirToMine(food.gameObject);
-        Vector3 dir = this.transform.forward;
+        Vector3 dir = this.transform.up;
 
         inputs[0] = dirToMine.x;
         inputs[1] = dirToMine.y;
@@ -26,7 +26,7 @@ public class Agent : BaseAgent
         inputs[3] = dir.y;
 
         float[] output = brain.Synapsis(inputs);
-        agresivity = Mathf.Clamp(output[3], 0.0f, 1.0f);
+        //agresivity = Mathf.Clamp(output[3], 0.0f, 1.0f);
         agresivity = 0;
         SetForces(output[0], output[1], dt);
     }

@@ -25,10 +25,17 @@ public class Agent : BaseAgent
 
     public void CalculateNewRandPosition()
     {
+        Debug.Log(UnitName + "a cedido su lugar");
         Tile NewTile;
         do
         {
-            NewTile = Utilitys.currentGrid.GetTileAtPosition(new Vector2Int(Random.Range(-1, 2), Random.Range(-1, 2)));
+            NewTile = Utilitys.currentGrid.GetTileAtPosition
+                (
+                new Vector2Int(
+                    this.NewTile.pos.x + Random.Range(-1, 2),
+                    this.NewTile.pos.y + Random.Range(-1, 2)
+                    )
+                );
 
         } while (this.NewTile == NewTile);
         

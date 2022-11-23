@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using SFB;
+
 public class PopulationManager : MonoBehaviour
 {
 
@@ -38,8 +40,6 @@ public class PopulationManager : MonoBehaviour
 
     private List<Genome> LoadGen = null;
 
-    private FileDataHandler fileDataHandler = null;
-
     private bool load = false;
 
     #endregion
@@ -70,9 +70,8 @@ public class PopulationManager : MonoBehaviour
     #endregion
 
     #region PUBLIC_METHODS
-    public void StartSimulation(int teamID , FileDataHandler fileDataHandler)
+    public void StartSimulation(int teamID)
     {
-        this.fileDataHandler = fileDataHandler;
         this.teamID = teamID;
         SimulationScreen.transform.parent.gameObject.SetActive(true);
 
@@ -375,16 +374,18 @@ public class PopulationManager : MonoBehaviour
                 populationGOs.Add(CreateTank(genome, brain));
             }
         }
-
-        for (int i = 0; i < populationCount; i++)
+        else
         {
-            NeuralNetwork brain = CreateBrain();
+            for (int i = 0; i < populationCount; i++)
+            {
+                NeuralNetwork brain = CreateBrain();
             
-            Genome genome = new Genome(brain.GetTotalWeightsCount());
+                Genome genome = new Genome(brain.GetTotalWeightsCount());
 
-            brain.SetWeights(genome.genome);
+                brain.SetWeights(genome.genome);
 
-            populationGOs.Add(CreateTank(genome, brain));
+                populationGOs.Add(CreateTank(genome, brain));
+            }
         }
     }
     private Agent CreateTank(Genome genome, NeuralNetwork brain)
@@ -453,8 +454,11 @@ public class PopulationManager : MonoBehaviour
 
     private void LoadData()
     {
+        
+
+
         GameData data;
-        data = fileDataHandler.Load(teamID.ToString());
+        data = FileDataHandler.Load(StandaloneFileBrowser.OpenFilePanel("Open File", "", "", false)[0]);
         CurrentGeneration = data.generationNumber;
         populationCount = data.PopulationCount;
         EliteCount = data.EliteCount;
@@ -483,6 +487,7 @@ public class PopulationManager : MonoBehaviour
 
     private void SaveData()
     {
+
         GameData data = new GameData();
         data.generationNumber = CurrentGeneration;
         data.PopulationCount = PopulationCount;
@@ -498,7 +503,8 @@ public class PopulationManager : MonoBehaviour
         foreach (var item in populationGOs)
             data.genomes.Add(item.genome);
 
-        fileDataHandler.Save(data, teamID.ToString());
+
+        FileDataHandler.Save(data,StandaloneFileBrowser.SaveFilePanel("Save File", "", "Team_"+teamID.ToString()+"_Generation_"+CurrentGeneration.ToString() , "json"));
     }
     #endregion
 }

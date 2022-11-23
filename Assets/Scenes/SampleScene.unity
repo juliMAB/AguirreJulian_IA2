@@ -4077,9 +4077,9 @@ MonoBehaviour:
   EliteCount: 4
   MutationChance: 0.1
   MutationRate: 0.01
-  InputsCount: 5
+  InputsCount: 6
   HiddenLayers: 1
-  OutputsCount: 3
+  OutputsCount: 4
   NeuronsCountPerHL: 7
   Bias: 1
   P: 0.5
@@ -9488,9 +9488,9 @@ MonoBehaviour:
   EliteCount: 4
   MutationChance: 0.1
   MutationRate: 0.01
-  InputsCount: 5
+  InputsCount: 6
   HiddenLayers: 1
-  OutputsCount: 3
+  OutputsCount: 4
   NeuronsCountPerHL: 7
   Bias: 1
   P: 0.5
@@ -10400,8 +10400,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bfb1a49d5135fcc458110d1a25603388, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fileName: data
-  extention: json
   mainConfig: {fileID: 519419922}
   simConfig: {fileID: 508634527}
   foodSpawner: {fileID: 1465320575}

@@ -8,13 +8,9 @@ public class Main : MonoBehaviour
     private bool isRunning = false;
     private float currentTimePerIteration;
     private int initialFoodCuantity;
-    private FileDataHandler dataHandler;
     #endregion
 
     #region EXPOSED_FIELDS
-    [Header("File Storage Config")]
-    [SerializeField] private string fileName;
-    [SerializeField] private string extention;
 
     [SerializeField] private StartConfigurationMain mainConfig = null;
     [SerializeField] private SimConfigurationMain simConfig = null;
@@ -38,7 +34,6 @@ public class Main : MonoBehaviour
 
     private void Start()
     {
-        dataHandler = new FileDataHandler(Application.dataPath, fileName, extention);
         if (gridManager == null)
             gridManager = gameObject.AddComponent<GridManager>();
         Utilitys.currentGrid = gridManager;
@@ -104,7 +99,7 @@ public class Main : MonoBehaviour
         for (int i = 0; i < populations.Length; i++)
         {
             totalAgents += populations[i].PopulationCount;
-            populations[i].StartSimulation(i,dataHandler);
+            populations[i].StartSimulation(i);
         }
         initialFoodCuantity = totalAgents;
         foodSpawner.CreateFoods(SceneExtents, initialFoodCuantity);

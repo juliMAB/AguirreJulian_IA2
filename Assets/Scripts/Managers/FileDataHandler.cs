@@ -2,22 +2,14 @@ using UnityEngine;
 using System;
 using System.IO;
 
-public class FileDataHandler
+public static class FileDataHandler
 {
-    private string dataDirPath = "";
-    private string dataFileName = "";
-    private string dataExtention = "";
-    public FileDataHandler(string dataDirPath, string dataFileName, string dataextention)
-    {
-        this.dataDirPath = dataDirPath;
-        this.dataFileName = dataFileName;
-        this.dataExtention = dataextention;
-    }
 
-    public GameData Load(string teamID)
+    public static GameData Load(string dir)
     {
         // use Path.Combine to account for different OS's having different path separators
-        string fullPath = Path.Combine(dataDirPath, dataFileName + teamID + dataExtention);
+        //string fullPath = Path.Combine(dataDirPath, dataFileName + teamID + dataExtention);
+        string fullPath = Path.Combine(dir);
         GameData loadedData = null;
         if (File.Exists(fullPath))
         {
@@ -44,10 +36,10 @@ public class FileDataHandler
         return loadedData;
     }
 
-    public void Save(GameData data, string teamID)
+    public static void Save(GameData data, string fullPath)
     {
         // use Path.Combine to account for different OS's having different path separators
-        string fullPath = Path.Combine(dataDirPath, dataFileName + teamID + dataExtention);
+        //string fullPath = Path.Combine(dataDirPath, dataFileName + teamID + dataExtention);
         try
         {
             // create the directory the file will be written to if it doesn't already exist

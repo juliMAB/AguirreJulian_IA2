@@ -126,9 +126,12 @@ public class PopulationManager : MonoBehaviour
         //inicio proceso de reproduccion.
         if (populationGoToReproduce.Count>=2)
         {
-            foreach (var item in populationGoToReproduce)
-                populationGenomeNew.Add(item.genome);
-        
+            for (int i = 0; i < populationGoToReproduce.Count; i++)
+            {
+                populationGenomeNew.Add(populationGoToReproduce[i].genome);
+                if (i == populationGoToReproduce.Count - 1 && populationGoToReproduce.Count % 2 != 0) // preguntar si es el ultimo y si lo es y es impar la cantidad de indv, delet de la list.
+                    populationGenomeNew.Remove(populationGoToReproduce[i].genome);
+            }
             Genome[] newGenomes = genAlg.Epoch(populationGenomeNew.ToArray());
 
             for (int i = 0; i < populationGoToReproduce.Count; i++)
@@ -154,7 +157,7 @@ public class PopulationManager : MonoBehaviour
             item.OnReset();
         SimulationScreen.UpdateActualPopulation(populationGOs.Count);
     }
-    public void FindFoodUpdate(float dt,List<Food> foods)
+    public void FindFoodUpdate(List<Food> foods)
 	{
         foreach (Agent t in populationGOs)
         {
@@ -166,20 +169,34 @@ public class PopulationManager : MonoBehaviour
 
             // Think!! 
 
-            t.Think(dt); // piensa cual va a ser la posicion siguiente a la que se va a mover.
+            t.Think(); // piensa cual va a ser la posicion siguiente a la que se va a mover.
         }
     }
-    public void MoveUpdate(PopulationManager OtherPopulation)
+    //public void MoveUpdate(PopulationManager OtherPopulation)
+    //{
+    //    foreach (Agent t in populationGOs)
+    //    {
+    //        foreach (Agent t2 in OtherPopulation.populationGOs) // comparar con sus enemigos si seder su nueva tile y no moverse.
+    //        {
+    //            if (t.NewTile == t2.NewTile)
+    //                if (Random.value > t.ThinkFightOrRun())//huir.
+    //                    t.NewTile = t.PreviousTile;
+    //        }
+    //    }
+    //}
+    /// <summary>
+    /// Se recorren los agentes y si su newtile tiene al menos un individuo de otro equipo, se pregunta si pelear o no
+    /// </summary>
+    public void MoveUpdate()
     {
         foreach (Agent t in populationGOs)
-        {
-            foreach (Agent t2 in OtherPopulation.populationGOs) // comparar con sus enemigos si seder su nueva tile y no moverse.
-            {
-                if (t.NewTile == t2.NewTile)
-                    if (Random.value > t.ThinkFightOrRun())//huir.
-                        t.NewTile = t.PreviousTile;
-            }
-        }
+            foreach (Agent t2 in t.NewTile.NewUnits)
+                if (t.teamID != t2.teamID)
+                    if (Random.value > t.ThinkFightOrRun())//toma la decision de quedarse o irse.
+                    {
+                        t.NewTile = t.OccupiedTile;
+                        return;
+                    }
     }
     public void FightUpdate(PopulationManager OtherPopulation)
     {
@@ -209,6 +226,37 @@ public class PopulationManager : MonoBehaviour
             }
         }
     }
+    //public void FightUpdate()
+    //{
+    //    for (int i = 0; i < populationGOs.Count; i++)
+    //    {
+    //        if (populationGOs[i]==null)
+    //        {
+    //            populationGOs.RemoveAt(i);
+    //            i--;
+    //        }
+    //        for (int w = 0; w < populationGOs[i].NewTile.NewUnits.Count; w++)
+    //        {
+    //            if (Random.value > 0.5f)
+    //            {
+    //                Agent c = populationGOs[i];
+    //                populationGOs.Remove(c);
+    //                c.NewTile.RemoveUnitOnNewList(c);
+    //                c.OccupiedTile.RemoveUnitOnList(c);
+    //                Destroy(c.gameObject);
+    //                i--;
+    //                break;
+    //            }
+    //            else
+    //            {
+    //                BaseUnit c = populationGOs[i].NewTile.NewUnits[w];
+    //                c.NewTile.RemoveUnitOnNewList(c);
+    //                Destroy(c.gameObject);
+    //                w--;
+    //            }
+    //        }
+    //    }
+    //}
     public void LastUpdate()
     {
         foreach (Agent t in populationGOs)

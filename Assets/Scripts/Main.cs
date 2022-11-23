@@ -70,10 +70,11 @@ public class Main : MonoBehaviour
 
             for (int i = 0; i < populations.Length; i++)
                 if (foodSpawner.foods.Count > 0)
-                    populations[i].FindFoodUpdate(dt, foodSpawner.foods);
+                    populations[i].FindFoodUpdate(foodSpawner.foods);
 
-            populations[0].MoveUpdate(populations[1]); // preguntar si el siguiente es el siguiente de otro-> ceder posicion o quedarse.
-            populations[1].MoveUpdate(populations[0]);
+            for (int i = 0; i < populations.Length; i++)
+                populations[i].MoveUpdate(); // preguntar si el siguiente es el siguiente de otro-> ceder posicion o quedarse.
+
             populations[0].FightUpdate(populations[1]);
 
             for (int i = 0; i < populations.Length; i++)

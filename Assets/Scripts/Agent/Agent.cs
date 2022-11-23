@@ -15,7 +15,7 @@ public class Agent : BaseAgent
         return agresivity;
     }
 
-    protected override void OnThink(float dt)
+    protected override void OnThink()
     {
         Vector3 dirToMine = GetDirToMine(food.gameObject);
         Vector3 dir = this.transform.up;
@@ -24,11 +24,11 @@ public class Agent : BaseAgent
         inputs[1] = dirToMine.y;
         inputs[2] = dir.x;
         inputs[3] = dir.y;
+        inputs[4] = agresivity;
 
         float[] output = brain.Synapsis(inputs);
-        //agresivity = Mathf.Clamp(output[3], 0.0f, 1.0f);
-        agresivity = 0;
-        SetForces(output[0], output[1], dt);
+        agresivity = Mathf.Clamp(output[2], 0.0f, 1.0f);
+        SetForces(output[0], output[1]);
     }
 
     public void SetTeamID(int id) => teamID = id;

@@ -7,6 +7,8 @@ public abstract class Tile : MonoBehaviour {
     public string TileName;
 
     public List <BaseUnit> OccupiedUnit = null; // cosas en la tile.
+
+    public List<BaseUnit> NewUnits = null; // cosas que va a tener el tile la prixima iteracion.
     #endregion
 
     #region EXPOSED_FIELD
@@ -31,7 +33,7 @@ public abstract class Tile : MonoBehaviour {
     #endregion
 
     #region PUBLIC_METHODS
-    public virtual void Init(int x, int y){ OccupiedUnit.Clear(); }
+    public virtual void Init(int x, int y){ OccupiedUnit.Clear(); NewUnits.Clear(); }
     public void AddUnitOnList(BaseUnit unit)
     {
         OccupiedUnit.Add(unit);
@@ -40,6 +42,15 @@ public abstract class Tile : MonoBehaviour {
     {
         OccupiedUnit.Remove(unit);
     }
+    public void AddUnitOnNewList(BaseUnit unit)
+    {
+        NewUnits.Add(unit);
+    }
+    public void RemoveUnitOnNewList(BaseUnit unit)
+    {
+        NewUnits.Remove(unit);
+    }
+
     public bool HasFood()
     {
         bool hasFood = false;

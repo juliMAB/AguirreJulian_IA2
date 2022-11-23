@@ -4077,9 +4077,9 @@ MonoBehaviour:
   EliteCount: 4
   MutationChance: 0.1
   MutationRate: 0.01
-  InputsCount: 4
+  InputsCount: 5
   HiddenLayers: 1
-  OutputsCount: 2
+  OutputsCount: 3
   NeuronsCountPerHL: 7
   Bias: 1
   P: 0.5
@@ -8560,7 +8560,7 @@ MonoBehaviour:
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 1
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -9488,9 +9488,9 @@ MonoBehaviour:
   EliteCount: 4
   MutationChance: 0.1
   MutationRate: 0.01
-  InputsCount: 4
+  InputsCount: 5
   HiddenLayers: 1
-  OutputsCount: 2
+  OutputsCount: 3
   NeuronsCountPerHL: 7
   Bias: 1
   P: 0.5

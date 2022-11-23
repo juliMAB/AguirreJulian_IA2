@@ -48,20 +48,35 @@ public abstract class Tile : MonoBehaviour {
         OccupiedUnit.Remove(unit);
     }
 
-    public bool HasFood()
+    //public bool HasFood()
+    //{
+    //    bool hasFood = false;
+    //    for (int i = 0; i < OccupiedUnit.Count; i++)
+    //    {
+    //        if (OccupiedUnit[i] != null)
+    //        {
+    //            if (OccupiedUnit[i].Faction ==Faction.Food)
+    //            {
+    //                hasFood = true;
+    //            }
+    //        }
+    //    }
+    //    return hasFood;
+    //}
+    public BaseUnit HasFood()
     {
-        bool hasFood = false;
+        BaseUnit food = null;
         for (int i = 0; i < OccupiedUnit.Count; i++)
         {
             if (OccupiedUnit[i] != null)
             {
-                if (OccupiedUnit[i].Faction ==Faction.Food)
+                if (OccupiedUnit[i].Faction == Faction.Food)
                 {
-                    hasFood = true;
+                    food = OccupiedUnit[i];
                 }
             }
         }
-        return hasFood;
+        return food;
     }
     public bool HasUnit()
     {

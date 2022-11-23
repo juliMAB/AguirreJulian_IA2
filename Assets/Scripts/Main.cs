@@ -69,9 +69,6 @@ public class Main : MonoBehaviour
 
             
             populations[0].MoveUpdate(populations[1]); // preguntar si el siguiente es el siguiente de otro-> ceder posicion o quedarse.
-            //populations[1].MoveUpdate(populations[0]);
-
-            //populations[0].FightUpdate(populations[1]);
 
             for (int i = 0; i < populations.Length; i++)
                 populations[i].LastUpdate();

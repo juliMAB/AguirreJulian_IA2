@@ -127,7 +127,7 @@ public class StartConfigurationTeam : MonoBehaviour
         NeuronsPerHiddenLayerTxt.text = NeuronsPerHiddenLayerString + NeuronsPerHiddenLayer.ToString();
         NeuronsPerHiddenLayerSlider.gameObject.SetActive(false);
 
-        BiasTxt.text = BiasString + "-" + Bias.ToString();
+        BiasTxt.text = BiasString + Bias.ToString();
         BiasSlider.gameObject.SetActive(false);
 
         SigmoidSlopeTxt.text = SigmoidSlopeString + SigmoidSlope.ToString();

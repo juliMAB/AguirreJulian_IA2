@@ -91,5 +91,47 @@ public class StartConfigurationTeam : MonoBehaviour
         updateSigmoidSlope?.Invoke(SigmoidSlopeSlider.value);
 
         LoadButton.onClick.AddListener(updateLoad);
+        LoadButton.onClick.AddListener(()=>LoadButton.gameObject.SetActive(false));
     }
+
+
+
+
+    
+    public void OverrideValuesLoad(
+        int PopulationCount,
+        int EliteCount,
+        float MutationChance,
+        float MutationRate,
+        int HiddenLayersCount,
+        int NeuronsPerHiddenLayer,
+        float Bias,
+        float SigmoidSlope
+        )
+    {
+        PopulationCountTxt.text = PopulationCountString + PopulationCount.ToString();
+        PopulationCountSlider.gameObject.SetActive(false);
+
+        EliteCountTxt.text = EliteCountString + EliteCount.ToString();
+        EliteCountSlider.gameObject.SetActive(false);
+
+        MutationChanceTxt.text = MutationChanceString + MutationChance.ToString();
+        MutationChanceSlider.gameObject.SetActive(false);
+
+        MutationRateTxt.text = MutationRateString + MutationRate.ToString();
+        MutationRateSlider.gameObject.SetActive(false);
+
+        HiddenLayersCountTxt.text = HiddenLayersCountString + HiddenLayersCount.ToString();
+        HiddenLayersCountSlider.gameObject.SetActive(false);
+
+        NeuronsPerHiddenLayerTxt.text = NeuronsPerHiddenLayerString + NeuronsPerHiddenLayer.ToString();
+        NeuronsPerHiddenLayerSlider.gameObject.SetActive(false);
+
+        BiasTxt.text = BiasString + "-" + Bias.ToString();
+        BiasSlider.gameObject.SetActive(false);
+
+        SigmoidSlopeTxt.text = SigmoidSlopeString + SigmoidSlope.ToString();
+        SigmoidSlopeSlider.gameObject.SetActive(false);
+    }
+
 }

@@ -47,7 +47,7 @@ public class Main : MonoBehaviour
 
         mainConfig.MyStart((x) => { sizeGridX = (int)x; }, (z) => { sizeGridZ = (int)z; }, StartSimulation, (x) => { MaxTurns = (int)x; });
         simConfig.MyStart((x) => { MaxTurns = (int)x; }, (x) => { TimePerTurn = (int)x; }, (x) => { IterationCount = (int)x; });
-        gridManager.SetSize(sizeGridX, sizeGridZ);
+        //gridManager.SetSize(sizeGridX, sizeGridZ);
         SceneExtents = new Vector3(sizeGridX, 0.0f, sizeGridZ); // aca iria la relacion a la grid.
         
     }
@@ -72,8 +72,9 @@ public class Main : MonoBehaviour
                 if (foodSpawner.foods.Count > 0)
                     populations[i].FindFoodUpdate(foodSpawner.foods);
 
-            for (int i = 0; i < populations.Length; i++)
-                populations[i].MoveUpdate(); // preguntar si el siguiente es el siguiente de otro-> ceder posicion o quedarse.
+            
+            populations[0].MoveUpdate(populations[1]); // preguntar si el siguiente es el siguiente de otro-> ceder posicion o quedarse.
+            populations[1].MoveUpdate(populations[0]);
 
             populations[0].FightUpdate(populations[1]);
 
@@ -97,6 +98,7 @@ public class Main : MonoBehaviour
     #region PRIVATE_METHODS
     private void StartSimulation()
     {
+        gridManager.SetSize(sizeGridX, sizeGridZ);
         gridManager.GenerateGrid();
         int totalAgents = 0;
         for (int i = 0; i < populations.Length; i++)

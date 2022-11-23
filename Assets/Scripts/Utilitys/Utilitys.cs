@@ -10,7 +10,7 @@ public class Utilitys
     }
     public static Vector2Int GetRandomPosFood()
     {
-        return new Vector2Int(UnityEngine.Random.Range(0,currentGrid.Width), UnityEngine.Random.Range(1, currentGrid.Width-1));
+        return new Vector2Int(UnityEngine.Random.Range(0,currentGrid.Width), UnityEngine.Random.Range(1, currentGrid.Height-1));
     }
     public static Food GetNearest(Transform questioner, List<Food> objects)
     {

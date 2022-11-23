@@ -34,7 +34,8 @@ public class GridManager : MonoBehaviour {
         {
             for (int y = 0; y < _height; y++) {
                 var spawnedTile = Instantiate(_grassTile, new Vector3(x, y), Quaternion.identity, _tilesConteiner);
-                spawnedTile.name = $"Tile {x} {y}";
+                spawnedTile.name = $"Tile ("+ x.ToString() +" , "+ y.ToString() + ")";
+                spawnedTile.TileName = spawnedTile.name;
                 spawnedTile.Init(x,y);
                 _tiles[new Vector2(x, y)] = spawnedTile;
             }

@@ -13,6 +13,8 @@ public class BaseAgent : BaseUnit
 
     [SerializeField] private Vector3 newPos;
 
+    [SerializeField] private string lastDir;
+
     public void SetBrain(Genome genome, NeuralNetwork brain)
     {
         this.genome = genome;
@@ -36,41 +38,38 @@ public class BaseAgent : BaseUnit
         rotFactor *= 2.0f; //para que el resultado vaya de 0 a 4; 0 front, 1 left,2 back, 3 right, 4 dontMove.
         int TotalRot = Mathf.RoundToInt (rotFactor) * 90;
         if (TotalRot == 360)
+        {
+            lastDir = "NoMove";
             return;
-        //if (transform.up == Vector3.up)
-        //{
-        //    Debug.Log("no move");
-        //    return; // no moverse.
-        //}
+        }
         this.transform.rotation = Quaternion.AngleAxis(TotalRot, Vector3.forward);
         newPos += this.transform.up; // rotar y  adelantar en 1 forward.
-        //if (transform.up == Vector3.up)
-        //{
-        //    Debug.Log("go up");
-        //}
-        //else if (transform.up == Vector3.up* -1)
-        //{
-        //    Debug.Log("go down");
-        //}
-        //else if (transform.up == Vector3.left)
-        //{
-        //    Debug.Log("go left");
-        //}
-        //else if (transform.up == Vector3.left * -1)
-        //{
-        //    Debug.Log("go right");
-        //}
-        //else
-        //{
-        //    Debug.Log("other?");
-        //}
+        if (transform.up == Vector3.up)
+        {
+            lastDir = "Up";
+        }
+        else if (transform.up == Vector3.up* -1)
+        {
+            lastDir = "Down";
+        }
+        else if (transform.up == Vector3.left)
+        {
+            lastDir = "Left";
+        }
+        else if (transform.up == Vector3.left * -1)
+        {
+            lastDir = "Right";
+        }
+        else
+        {
+            lastDir = "Other";
+        }
     }
 
     public void Think()
     {
         OnThink();
-        NewTile = Utilitys.currentGrid.GetTileAtPosition(new Vector2Int(Mathf.CeilToInt (newPos.x), Mathf.CeilToInt(newPos.y)));
-        //NewTile.AddUnitOnNewList(this);
+        NewTile = Utilitys.currentGrid.GetTileAtPosition(new Vector2Int( (int)newPos.x,(int)newPos.y));
     }
     public float ThinkFightOrRun()
     {

@@ -19,6 +19,14 @@ public class Agent : BaseAgent
     {
         Vector3 dirToMine = GetDirToMine(food.gameObject);
         Vector3 dir = this.transform.up;
+        if (dir.x<0.01f)
+        {
+            dir.x = 0;
+        }
+        if (dir.y<0.01f)
+        {
+            dir.y = 0;
+        }
 
         inputs[0] = dirToMine.x;
         inputs[1] = dirToMine.y;

@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
-
 public class PopulationManager : MonoBehaviour
 {
 
@@ -156,7 +155,7 @@ public class PopulationManager : MonoBehaviour
             item.OnReset();
         SimulationScreen.UpdateActualPopulation(populationGOs.Count);
     }
-    public void FindFoodUpdate(List<Food> foods)
+    public void FindFood_OnThink(List<Food> foods)
 	{
         foreach (Agent t in populationGOs)
         {
@@ -171,17 +170,131 @@ public class PopulationManager : MonoBehaviour
     }
     public void MoveUpdate(PopulationManager OtherPopulation)
     {
-        foreach (Agent t in populationGOs)
+        for (int i = 0; i < populationGOs.Count; i++)
         {
-            foreach (Agent t2 in OtherPopulation.populationGOs) // comparar con sus enemigos si seder su nueva tile y no moverse.
+            Agent t = populationGOs[i];
+            for (int w = 0; w < OtherPopulation.populationGOs.Count; w++)// comparar con sus enemigos si seder su nueva tile y no moverse.
             {
+                Agent t2 = OtherPopulation.populationGOs[w];
                 if (t.NewTile == t2.NewTile)
-                    if (Random.value > t.ThinkFightOrRun())//huir.
+                {
+                    if (!t.NewTile.HasFood()) //en el caso avanzado de que no tenga comida el tile.
                     {
-                        Debug.Log(t.UnitName + " pensando si pelear");
-                        t.NewTile = t.OccupiedTile;
+                        //true = fight, false = run.
+                        bool stay1 = Random.value <= t.ThinkFightOrRun();
+                        bool stay2 = Random.value <= t.ThinkFightOrRun();
+                        if (stay1 && stay2)//pelear.
+                        {
+                            bool exitLoop = false;
+                            int death = Pelea(t, populationGOs, t2, OtherPopulation.populationGOs);
+
+                            switch (death)
+                            {
+                                case 1:
+                                    i--; exitLoop = true;
+                                    break;
+                                case 2:
+                                    w--;
+                                    break;
+                                default:
+                                    Debug.LogError("ERROR el valor devuelto es incorrecto.");
+                                    break;
+                            }
+                            if (exitLoop) break;
+                        }
+                        else if (!stay1 && !stay2) // irse los 2.
+                        {
+                            //no pasa nada.
+                        }
+                        else // uno se queda otro se va.
+                        {
+                            if (stay1)
+                                if (Intentar_Escapar(t2, OtherPopulation.populationGOs))
+                                    w--;
+                                else
+                                if (Intentar_Escapar(t, populationGOs))
+                                {
+                                    i--;
+                                    break;
+                                }
+                        }
                     }
+                    else //en el caso simple que 2 unidades enemigas se encuentran en un tile con comida.
+                    {
+                        //true = quedarse, false = volver a tile anterior.
+                        bool stay1 = Random.value <= t.ThinkFightOrRun();
+                        bool stay2 = Random.value <= t.ThinkFightOrRun();
+                        if (stay1 && stay2)//ambos se quedan.
+                        {
+                            bool exitLoop = false;
+                            int death = Pelea(t, populationGOs, t2, OtherPopulation.populationGOs);
+
+                            switch (death)
+                            {
+                                case 1:
+                                    i--; exitLoop = true;
+                                    break;
+                                case 2:
+                                    w--;
+                                    break;
+                                default:
+                                    Debug.LogError("ERROR el valor devuelto es incorrecto.");
+                                    break;
+                            }
+                            if (exitLoop) break;
+                        }
+                        else if (!stay1 && !stay2) // irse los 2.
+                        {
+                            //no aclara.
+                        }
+                        else // uno se queda otro se va. // no aclara? asi que sibrevive y hace la suyas el que se va.
+                        {
+                            if (stay1)
+                            {
+                                t2.NewTile = t2.OccupiedTile;
+                                w--;
+                            }
+                            else
+                            {
+                                t.NewTile = t2.OccupiedTile;
+                                i--;
+                                break;
+                            }
+                        }
+                    }
+                }     
             }
+        }
+    }
+
+    private bool Intentar_Escapar(Agent t, List<Agent> population)
+    {
+        Debug.Log(t.UnitName + " escapa de la batalla");
+        t.NewTile = t.OccupiedTile;
+        if (Random.value < 0.75f) // posibilidad de morir por irse.
+        {
+            Morir(t, population);
+            return true;
+        }
+        return false;
+    }
+    private void Morir(Agent t, List<Agent> population)
+    {
+        Debug.Log(t.UnitName + " a muerto");
+        population.Remove(t);
+        Destroy(t.gameObject);
+    }
+    private int Pelea(Agent t1, List<Agent> t1_population, Agent t2, List<Agent> t2_population)
+    {
+        if (Mathf.RoundToInt(Random.value) > 0.5f)
+        {
+            Morir(t1, t1_population);
+            return 1;
+        }
+        else
+        {
+            Morir(t2, t2_population);
+            return 2;
         }
     }
     
@@ -198,7 +311,7 @@ public class PopulationManager : MonoBehaviour
             {
                 if(populationGOs[i].NewTile == OtherPopulation.populationGOs[w].NewTile)
                 {
-                    if (Random.value > 0.5f)
+                    if (Mathf.RoundToInt(Random.value) > 0.5f)
                     {
                         Agent c = populationGOs[i];
                         Debug.Log(c.UnitName + " a muerto");
@@ -227,6 +340,15 @@ public class PopulationManager : MonoBehaviour
         {
             t.AskTileFoodorMove(); // comer la comida o moverse a la newTile.
         }
+    }
+    public void CompareWithAllys()
+    {
+        foreach (Agent t in populationGOs)
+            foreach (Agent t2 in populationGOs)
+                if (t.NewTile == t2.NewTile)
+                    if (t != t2)
+                        if (t.OnThinkShared() > 0.5f) // si es buena onda le sede la posicion a su compañero.
+                            t.CalculateNewRandPosition();
     }
     
     #endregion

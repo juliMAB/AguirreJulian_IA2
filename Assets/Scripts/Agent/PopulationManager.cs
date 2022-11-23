@@ -177,7 +177,10 @@ public class PopulationManager : MonoBehaviour
             {
                 if (t.NewTile == t2.NewTile)
                     if (Random.value > t.ThinkFightOrRun())//huir.
+                    {
+                        Debug.Log(t.UnitName + " pensando si pelear");
                         t.NewTile = t.OccupiedTile;
+                    }
             }
         }
     }
@@ -198,6 +201,7 @@ public class PopulationManager : MonoBehaviour
                     if (Random.value > 0.5f)
                     {
                         Agent c = populationGOs[i];
+                        Debug.Log(c.UnitName + " a muerto");
                         populationGOs.Remove(c);
                         Destroy(c.gameObject);
                         i--;
@@ -206,6 +210,7 @@ public class PopulationManager : MonoBehaviour
                     else
                     {
                         Agent c = OtherPopulation.populationGOs[w];
+                        Debug.Log(c.UnitName + " a muerto");
                         OtherPopulation.populationGOs.Remove(c);
                         Destroy(c.gameObject);
                         w--;

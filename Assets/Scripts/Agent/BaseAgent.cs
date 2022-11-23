@@ -13,7 +13,7 @@ public class BaseAgent : BaseUnit
 
     [SerializeField] private Vector3 newPos;
 
-    [SerializeField] private string lastDir;
+    [SerializeField] private string lastDir = " ";
 
     public void SetBrain(Genome genome, NeuralNetwork brain)
     {
@@ -69,7 +69,7 @@ public class BaseAgent : BaseUnit
     public void Think()
     {
         OnThink();
-        NewTile = Utilitys.currentGrid.GetTileAtPosition(new Vector2Int( (int)newPos.x,(int)newPos.y));
+        NewTile = Utilitys.currentGrid.GetTileAtPosition(new Vector2Int( Mathf.RoundToInt(newPos.x), Mathf.RoundToInt(newPos.y)));
     }
     public float ThinkFightOrRun()
     {

@@ -12,6 +12,7 @@ public class Agent : BaseAgent
 
     protected override float OnThinkFight()
     {
+        Debug.Log(UnitName + " pensando si pelear");
         return agresivity;
     }
 

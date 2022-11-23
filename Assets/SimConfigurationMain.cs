@@ -15,6 +15,7 @@ public class SimConfigurationMain : MonoBehaviour
     [SerializeField] private Slider IterationsPerTurnSlider;
 
     [SerializeField] private Button PauseButton;
+    [SerializeField] private Button ResetButton;
 
     private string MaxTurns = "MaxTurns : ";
     private string TimeTurn = "TimePerTurn : ";
@@ -40,7 +41,8 @@ public class SimConfigurationMain : MonoBehaviour
         updateMaxTurns?.Invoke(MaxTurnsSlider.value);
 
         PauseButton.onClick.AddListener(updatePause);
-        
+
+        ResetButton.onClick.AddListener(() => UnityEngine.SceneManagement.SceneManager.LoadScene(0));
     }
     public void MyUpdate(int CT,int MT)
     {

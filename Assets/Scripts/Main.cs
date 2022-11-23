@@ -6,11 +6,16 @@ public class Main : MonoBehaviour
 
     #region PRIVATE_FIELDS
     private bool isRunning = false;
+    private bool isPaused = false;
     private float currentTimePerIteration;
     private int initialFoodCuantity;
     #endregion
 
     #region EXPOSED_FIELDS
+    [SerializeField] private GameObject StartSimCanvas;
+    [SerializeField] private GameObject InGameSimCanvas;
+
+
 
     [SerializeField] private StartConfigurationMain mainConfig = null;
     [SerializeField] private SimConfigurationMain simConfig = null;
@@ -34,6 +39,8 @@ public class Main : MonoBehaviour
 
     private void Start()
     {
+        StartSimCanvas.SetActive(true);
+        InGameSimCanvas.SetActive(false);
         if (gridManager == null)
             gridManager = gameObject.AddComponent<GridManager>();
         Utilitys.currentGrid = gridManager;
@@ -41,15 +48,16 @@ public class Main : MonoBehaviour
             foodSpawner = new FoodSpawner();
 
         mainConfig.MyStart((x) => { sizeGridX = (int)x; }, (z) => { sizeGridZ = (int)z; }, StartSimulation, (x) => { MaxTurns = (int)x; });
-        simConfig.MyStart((x) => { MaxTurns = (int)x; }, (x) => { TimePerTurn = (int)x; }, (x) => { IterationCount = (int)x; });
-        //gridManager.SetSize(sizeGridX, sizeGridZ);
-        SceneExtents = new Vector3(sizeGridX, 0.0f, sizeGridZ); // aca iria la relacion a la grid.
+        simConfig.MyStart((x) => { MaxTurns = (int)x; }, (x) => { TimePerTurn = (int)x; }, (x) => { IterationCount = (int)x; }, TooglePause);
+        
         
     }
 
     private void FixedUpdate()
     {
         if (!isRunning)
+            return;
+        if (isPaused)
             return;
         float dt = Time.deltaTime;
         
@@ -88,8 +96,15 @@ public class Main : MonoBehaviour
     #endregion
 
     #region PRIVATE_METHODS
+    private void TooglePause()
+    {
+        isPaused = !isPaused;
+    }
+
+
     private void StartSimulation()
     {
+        SceneExtents = new Vector3(sizeGridX, 0.0f, sizeGridZ); // aca iria la relacion a la grid.
         gridManager.SetSize(sizeGridX, sizeGridZ);
         gridManager.GenerateGrid();
         int totalAgents = 0;

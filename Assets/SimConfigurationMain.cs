@@ -14,11 +14,13 @@ public class SimConfigurationMain : MonoBehaviour
     [SerializeField] private Text IterationsPerTurnText;
     [SerializeField] private Slider IterationsPerTurnSlider;
 
+    [SerializeField] private Button PauseButton;
+
     private string MaxTurns = "MaxTurns : ";
     private string TimeTurn = "TimePerTurn : ";
     private string IterationsPerTurn = "IterationsPerTurn : ";
 
-    public void MyStart(UnityAction<float> updateMaxTurns, UnityAction<float> updateTimeTurn, UnityAction<float> updateIterationsPerTurn)
+    public void MyStart(UnityAction<float> updateMaxTurns, UnityAction<float> updateTimeTurn, UnityAction<float> updateIterationsPerTurn, UnityAction updatePause)
     {
         MaxTurnsText.text = MaxTurns + MaxTurnsSlider.value.ToString();
 
@@ -36,6 +38,8 @@ public class SimConfigurationMain : MonoBehaviour
         updateTimeTurn?.Invoke(TimePerTurnSlider.value);
 
         updateMaxTurns?.Invoke(MaxTurnsSlider.value);
+
+        PauseButton.onClick.AddListener(updatePause);
         
     }
     public void MyUpdate(int CT,int MT)

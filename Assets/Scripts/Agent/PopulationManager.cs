@@ -80,15 +80,23 @@ public class PopulationManager : MonoBehaviour
         GenerateInitialPopulation();
     }
 
+    public bool isDie()
+    {
+        return populationGOs.Count <= 0;
+    }
+
+
     // Evolve!!!
     public void Epoc()
     {
+        if(CurrentGeneration%5==0)
+            SaveData();
         //primero se actualiza el UI.
         CurrentGeneration++;
         SimulationScreen.MyUpdate(
             CurrentGeneration,
-            Utilitys.getBestFitness(populationGOs),
-            Utilitys.getAvgFitness(populationGOs),
+            Utilitys.getBestFitness(populationGOs) ,
+            Utilitys.getAvgFitness(populationGOs)  ,
             Utilitys.getWorstFitness(populationGOs)
             );
         //se crean las listas de las posibilidades.
@@ -154,6 +162,38 @@ public class PopulationManager : MonoBehaviour
             item.OnReset();
         SimulationScreen.UpdateActualPopulation(populationGOs.Count);
     }
+
+    public void Epoc2ndChance(PopulationManager otherPopulation,float addMutationChance)
+    {
+        int cuantity = otherPopulation.populationGOs.Count;
+        //se crean las listas de las posibilidades.
+        List<Genome> populationGenomeNew = new List<Genome>();
+        for (int i = 0; i < cuantity; i++)
+        {
+            populationGenomeNew.Add(otherPopulation.populationGOs[i].genome);
+        }
+
+        Genome[] newGenomes = genAlg.CustomEpoch(populationGenomeNew.ToArray(), addMutationChance);
+        //inicio proceso de reproduccion.
+
+        for (int i = 0; i < cuantity; i++)
+        {
+            NeuralNetwork brain = otherPopulation.populationGOs[i].brain;
+
+            brain.SetWeights(newGenomes[i].genome);
+
+            Agent t = CreateTank(newGenomes[i], brain);
+            t.SetBrain(newGenomes[i], brain);
+            populationGOs.Add(t); // se agregarn los nuevos indivuduos.
+        }
+        
+        //fin inicio de reproduccion.
+
+        foreach (var item in populationGOs)
+            item.OnReset();
+        SimulationScreen.UpdateActualPopulation(populationGOs.Count);
+    }
+
     public void FindFood_OnThink(List<Food> foods)
 	{
         foreach (Agent t in populationGOs)
@@ -490,6 +530,9 @@ public class PopulationManager : MonoBehaviour
 
         GameData data = new GameData();
         data.generationNumber = CurrentGeneration;
+        data.BestFitness = Utilitys.getBestFitness(populationGOs);
+        data.AvrgFitness = Utilitys.getAvgFitness(populationGOs);
+        data.WorstFitness = Utilitys.getWorstFitness(populationGOs);
         data.PopulationCount = PopulationCount;
         data.EliteCount = EliteCount;
         data.MutationChance = MutationChance;
@@ -502,9 +545,9 @@ public class PopulationManager : MonoBehaviour
         data.P = P;
         foreach (var item in populationGOs)
             data.genomes.Add(item.genome);
-
-
-        FileDataHandler.Save(data,StandaloneFileBrowser.SaveFilePanel("Save File", "", "Team_"+teamID.ToString()+"_Generation_"+CurrentGeneration.ToString() , "json"));
+        string ArchiveFile = "Team_" + teamID.ToString() + "_Generation_" + CurrentGeneration.ToString() + "_FitnesAverage_" + data.AvrgFitness;
+        FileDataHandler.Save(data, Application.dataPath + "/MyData/" + ArchiveFile + ".json");
+        //FileDataHandler.Save(data,StandaloneFileBrowser.SaveFilePanel("Save File", "", ArchiveFile, "json"));
     }
     #endregion
 }

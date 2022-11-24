@@ -14,11 +14,13 @@ public class Main : MonoBehaviour
     #region EXPOSED_FIELDS
     [SerializeField] private GameObject StartSimCanvas;
     [SerializeField] private GameObject InGameSimCanvas;
+    [SerializeField] private GameObject EndSimCanvas;
 
 
 
     [SerializeField] private StartConfigurationMain mainConfig = null;
     [SerializeField] private SimConfigurationMain simConfig = null;
+    [SerializeField] private EndSimScreen EndscreenConfig = null;
     [SerializeField] private FoodSpawner foodSpawner = null;
     [SerializeField] private GridManager gridManager = null;
 
@@ -89,6 +91,24 @@ public class Main : MonoBehaviour
                     populations[i].Epoc();
                 foodSpawner.CreateFoods(SceneExtents, initialFoodCuantity);
                 currentTurn = 0;
+
+                if (populations[0].isDie() && populations[1].isDie())
+                    EndSimulation();
+                else if(!populations[0].isDie() && !populations[1].isDie()) //todo sigue igual de bien.
+                {}
+                else
+                {
+                    if (!populations[0].isDie())
+                    {
+                        Debug.Log("el grupo 1 a muerto, se cruzararan el equipo 0.");
+                        populations[1].Epoc2ndChance(populations[0], 1f / 100f);
+                    }
+                    else
+                    {
+                        Debug.Log("el grupo 0 a muerto, se cruzararan el equipo 1.");
+                        populations[0].Epoc2ndChance(populations[1], 1f / 100f);
+                    }
+                }
             }
             currentTurn++;
         }
@@ -116,6 +136,13 @@ public class Main : MonoBehaviour
         initialFoodCuantity = totalAgents;
         foodSpawner.CreateFoods(SceneExtents, initialFoodCuantity);
         isRunning = true;
+    }
+
+    private void EndSimulation()
+    {
+        isRunning = false;
+        EndSimCanvas.SetActive(true);
+        EndscreenConfig.MyStart("la simulacion a terminado.");
     }
 
     #endregion

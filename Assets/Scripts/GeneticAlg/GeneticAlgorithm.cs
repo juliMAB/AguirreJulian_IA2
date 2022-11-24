@@ -87,7 +87,32 @@ public class GeneticAlgorithm
 		return newPopulation.ToArray();
 	}
 
-	void SelectElite()
+    public Genome[] CustomEpoch(Genome[] oldGenomes,float addRatioMutation)
+    {
+        totalFitness = 0;
+
+        population.Clear();
+        newPopulation.Clear();
+
+        population.AddRange(oldGenomes);
+        //population.Sort(HandleComparison); no se ordenan por fitnes.
+
+        foreach (Genome g in population)
+        {
+            totalFitness += g.fitness;
+        }
+
+        SelectElite();
+
+        while (newPopulation.Count < population.Count)
+        {
+			CustomCrossover(addRatioMutation);
+        }
+
+        return newPopulation.ToArray();
+    }
+
+    void SelectElite()
 	{
 		for (int i = 0; i < eliteCount && newPopulation.Count < population.Count; i++)
 		{
@@ -108,8 +133,21 @@ public class GeneticAlgorithm
 		newPopulation.Add(child1);
 		newPopulation.Add(child2);
 	}
+    void CustomCrossover(float addRatioMutation)
+    {
+        Genome mom = RouletteSelection();
+        Genome dad = RouletteSelection();
 
-	void Crossover(Genome mom, Genome dad, out Genome child1, out Genome child2)
+        Genome child1;
+        Genome child2;
+
+        CustomCrossover(mom, dad, out child1, out child2, addRatioMutation);
+
+        newPopulation.Add(child1);
+        newPopulation.Add(child2);
+    }
+
+    void Crossover(Genome mom, Genome dad, out Genome child1, out Genome child2)
 	{
 		child1 = new Genome();
 		child2 = new Genome();
@@ -145,8 +183,45 @@ public class GeneticAlgorithm
 				child1.genome[i] += UnityEngine.Random.Range(-mutationRate, mutationRate);
 		}
 	}
+    void CustomCrossover(Genome mom, Genome dad, out Genome child1, out Genome child2,float addRatioMutation)
+    {
+        child1 = new Genome();
+        child2 = new Genome();
 
-	bool ShouldMutate()
+        child1.genome = new float[mom.genome.Length];
+        child2.genome = new float[mom.genome.Length];
+
+        int pivot = UnityEngine.Random.Range(0, mom.genome.Length);
+
+        for (int i = 0; i < pivot; i++)
+        {
+            child1.genome[i] = mom.genome[i];
+
+            if (ShouldMutate())
+                child1.genome[i] += UnityEngine.Random.Range(-mutationRate - addRatioMutation, mutationRate + addRatioMutation);
+
+            child2.genome[i] = dad.genome[i];
+
+            if (ShouldMutate())
+                child2.genome[i] += UnityEngine.Random.Range(-mutationRate - addRatioMutation, mutationRate + addRatioMutation);
+        }
+
+        for (int i = pivot; i < mom.genome.Length; i++)
+        {
+            child2.genome[i] = mom.genome[i];
+
+            if (ShouldMutate())
+                child2.genome[i] += UnityEngine.Random.Range(-mutationRate - addRatioMutation, mutationRate + addRatioMutation);
+
+            child1.genome[i] = dad.genome[i];
+
+            if (ShouldMutate())
+                child1.genome[i] += UnityEngine.Random.Range(-mutationRate - addRatioMutation, mutationRate + addRatioMutation);
+        }
+    }
+
+
+    bool ShouldMutate()
 	{
 		return UnityEngine.Random.Range(0.0f, 1.0f) < mutationChance;
 	}

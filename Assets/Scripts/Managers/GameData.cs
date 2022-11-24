@@ -4,6 +4,9 @@ using System.Collections.Generic;
 public class GameData
 {
     public int generationNumber;
+    public float BestFitness;
+    public float AvrgFitness;
+    public float WorstFitness;
     public int PopulationCount;
     public int EliteCount;
     public float MutationChance;

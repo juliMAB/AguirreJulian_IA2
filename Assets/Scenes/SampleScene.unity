@@ -11624,10 +11624,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   StartSimCanvas: {fileID: 2059363937}
   InGameSimCanvas: {fileID: 1539848736}
-  EndSimCanvas: {fileID: 0}
+  EndSimCanvas: {fileID: 736270292}
   mainConfig: {fileID: 519419922}
   simConfig: {fileID: 508634527}
-  EndscreenConfig: {fileID: 0}
+  EndscreenConfig: {fileID: 736270294}
   foodSpawner: {fileID: 1465320575}
   gridManager: {fileID: 1465320574}
   populations:

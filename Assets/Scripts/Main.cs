@@ -95,18 +95,20 @@ public class Main : MonoBehaviour
                 if (populations[0].isDie() && populations[1].isDie())
                     EndSimulation();
                 else if(!populations[0].isDie() && !populations[1].isDie()) //todo sigue igual de bien.
-                {}
+                {
+                    Debug.Log("Todo sigue igual");
+                }
                 else
                 {
                     if (!populations[0].isDie())
                     {
                         Debug.Log("el grupo 1 a muerto, se cruzararan el equipo 0.");
-                        populations[1].Epoc2ndChance(populations[0], 1f / 100f);
+                        populations[1].Epoc2ndChance(populations[0], 1,1);
                     }
                     else
                     {
                         Debug.Log("el grupo 0 a muerto, se cruzararan el equipo 1.");
-                        populations[0].Epoc2ndChance(populations[1], 1f / 100f);
+                        populations[0].Epoc2ndChance(populations[1], 1, 1);
                     }
                 }
             }

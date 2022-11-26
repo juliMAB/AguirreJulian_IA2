@@ -87,7 +87,7 @@ public class GeneticAlgorithm
 		return newPopulation.ToArray();
 	}
 
-    public Genome[] CustomEpoch(Genome[] oldGenomes,float addRatioMutation)
+    public Genome[] CustomEpoch(Genome[] oldGenomes,float addRatioMutation, float addChanceMutation)
     {
         totalFitness = 0;
 
@@ -106,7 +106,7 @@ public class GeneticAlgorithm
 
         while (newPopulation.Count < population.Count)
         {
-			CustomCrossover(addRatioMutation);
+			CustomCrossover(addRatioMutation,addChanceMutation);
         }
 
         return newPopulation.ToArray();
@@ -133,7 +133,7 @@ public class GeneticAlgorithm
 		newPopulation.Add(child1);
 		newPopulation.Add(child2);
 	}
-    void CustomCrossover(float addRatioMutation)
+    void CustomCrossover(float addRatioMutation,float addChanceMutation)
     {
         Genome mom = RouletteSelection();
         Genome dad = RouletteSelection();
@@ -141,7 +141,7 @@ public class GeneticAlgorithm
         Genome child1;
         Genome child2;
 
-        CustomCrossover(mom, dad, out child1, out child2, addRatioMutation);
+        CustomCrossover(mom, dad, out child1, out child2, addRatioMutation, addChanceMutation);
 
         newPopulation.Add(child1);
         newPopulation.Add(child2);
@@ -183,7 +183,7 @@ public class GeneticAlgorithm
 				child1.genome[i] += UnityEngine.Random.Range(-mutationRate, mutationRate);
 		}
 	}
-    void CustomCrossover(Genome mom, Genome dad, out Genome child1, out Genome child2,float addRatioMutation)
+    void CustomCrossover(Genome mom, Genome dad, out Genome child1, out Genome child2,float custmoRatemutation,float addChanceMutation)
     {
         child1 = new Genome();
         child2 = new Genome();
@@ -197,26 +197,26 @@ public class GeneticAlgorithm
         {
             child1.genome[i] = mom.genome[i];
 
-            if (ShouldMutate())
-                child1.genome[i] += UnityEngine.Random.Range(-mutationRate - addRatioMutation, mutationRate + addRatioMutation);
+            if (CustomShouldMutate(addChanceMutation))
+                child1.genome[i] += UnityEngine.Random.Range(-custmoRatemutation,custmoRatemutation);
 
             child2.genome[i] = dad.genome[i];
 
-            if (ShouldMutate())
-                child2.genome[i] += UnityEngine.Random.Range(-mutationRate - addRatioMutation, mutationRate + addRatioMutation);
+            if (CustomShouldMutate(addChanceMutation))
+                child2.genome[i] += UnityEngine.Random.Range(-custmoRatemutation,custmoRatemutation);
         }
 
         for (int i = pivot; i < mom.genome.Length; i++)
         {
             child2.genome[i] = mom.genome[i];
 
-            if (ShouldMutate())
-                child2.genome[i] += UnityEngine.Random.Range(-mutationRate - addRatioMutation, mutationRate + addRatioMutation);
+            if (CustomShouldMutate(addChanceMutation))
+                child2.genome[i] += UnityEngine.Random.Range(-custmoRatemutation,custmoRatemutation);
 
             child1.genome[i] = dad.genome[i];
 
-            if (ShouldMutate())
-                child1.genome[i] += UnityEngine.Random.Range(-mutationRate - addRatioMutation, mutationRate + addRatioMutation);
+            if (CustomShouldMutate(addChanceMutation))
+                child1.genome[i] += UnityEngine.Random.Range(-custmoRatemutation,custmoRatemutation);
         }
     }
 
@@ -225,8 +225,12 @@ public class GeneticAlgorithm
 	{
 		return UnityEngine.Random.Range(0.0f, 1.0f) < mutationChance;
 	}
+    bool CustomShouldMutate(float mutationChanceAdd)
+    {
+        return UnityEngine.Random.Range(0.0f, 1.0f) < (mutationChanceAdd);
+    }
 
-	int HandleComparison(Genome x, Genome y)
+    int HandleComparison(Genome x, Genome y)
 	{
 		return x.fitness > y.fitness ? 1 : x.fitness < y.fitness ? -1 : 0;
 	}

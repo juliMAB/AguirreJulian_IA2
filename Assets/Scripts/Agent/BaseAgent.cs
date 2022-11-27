@@ -13,7 +13,6 @@ public class BaseAgent : BaseUnit
 
     [SerializeField] private Vector3 newPos;
 
-    [SerializeField] private string lastDir = " ";
 
     public void SetBrain(Genome genome, NeuralNetwork brain)
     {
@@ -37,33 +36,8 @@ public class BaseAgent : BaseUnit
         rotFactor += 1.0f;
         rotFactor *= 2.0f; //para que el resultado vaya de 0 a 4; 0 front, 1 left,2 back, 3 right, 4 dontMove.
         int TotalRot = Mathf.RoundToInt (rotFactor) * 90;
-        if (TotalRot == 360)
-        {
-            lastDir = "NoMove";
-            return;
-        }
         this.transform.rotation = Quaternion.AngleAxis(TotalRot, Vector3.forward);
         newPos += this.transform.up; // rotar y  adelantar en 1 forward.
-        if (transform.up == Vector3.up)
-        {
-            lastDir = "Up";
-        }
-        else if (transform.up == Vector3.up* -1)
-        {
-            lastDir = "Down";
-        }
-        else if (transform.up == Vector3.left)
-        {
-            lastDir = "Left";
-        }
-        else if (transform.up == Vector3.left * -1)
-        {
-            lastDir = "Right";
-        }
-        else
-        {
-            lastDir = "Other";
-        }
     }
 
     public void Think()

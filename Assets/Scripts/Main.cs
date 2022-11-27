@@ -72,16 +72,19 @@ public class Main : MonoBehaviour
         simConfig.MyUpdate(currentTurn, MaxTurns);
         for (int w = 0; w < IterationCount; w++)
         {
-
-            for (int i = 0; i < populations.Length; i++)
-                if (foodSpawner.foods.Count > 0)
+            if (foodSpawner.foods.Count > 0)
+            {
+                for (int i = 0; i < populations.Length; i++)
                     populations[i].FindFood_OnThink(foodSpawner.foods);
 
+                populations[0].MoveUpdate(populations[1]); // preguntar si el siguiente es el siguiente de otro-> ceder posicion o quedarse.
             
-            populations[0].MoveUpdate(populations[1]); // preguntar si el siguiente es el siguiente de otro-> ceder posicion o quedarse.
+                for (int i = 0; i < populations.Length; i++)
+                    populations[i].LastUpdate();
+            }
 
-            for (int i = 0; i < populations.Length; i++)
-                populations[i].LastUpdate();
+            
+
 
             if (currentTurn > MaxTurns)
             {

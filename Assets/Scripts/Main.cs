@@ -83,9 +83,6 @@ public class Main : MonoBehaviour
                     populations[i].LastUpdate();
             }
 
-            
-
-
             if (currentTurn > MaxTurns)
             {
                 Debug.Log("Epoc");

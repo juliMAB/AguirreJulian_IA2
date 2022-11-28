@@ -518,9 +518,6 @@ public class PopulationManager : MonoBehaviour
 
     private void LoadData()
     {
-        
-
-
         GameData data;
         data = FileDataHandler.Load(StandaloneFileBrowser.OpenFilePanel("Open File", "", "", false)[0]);
         CurrentGeneration = data.generationNumber;
